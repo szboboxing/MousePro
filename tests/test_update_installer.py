@@ -56,17 +56,17 @@ def _payload(**updates):
         "build_number": 30700,
         "expires_at": expires.isoformat().replace("+00:00", "Z"),
         "commit": "abc123",
-        "release_notes_url": "https://github.com/pour-soi/PourInput/releases/tag/v3.7.0",
+        "release_notes_url": "https://github.com/szboboxing/MousePro/releases/tag/v3.7.0",
         "assets": {
             "windows-x64": {
-                "name": "PourInput-Windows.zip",
-                "url": "https://github.com/pour-soi/PourInput/releases/download/v3.7.0/PourInput-Windows.zip",
+                "name": "MousePro-Windows.zip",
+                "url": "https://github.com/szboboxing/MousePro/releases/download/v3.7.0/MousePro-Windows.zip",
                 "size": 123,
                 "sha256": "a" * 64,
             },
             "macos-arm64": {
-                "name": "PourInput-macOS.zip",
-                "url": "https://github.com/pour-soi/PourInput/releases/download/v3.7.0/PourInput-macOS.zip",
+                "name": "MousePro-macOS.zip",
+                "url": "https://github.com/szboboxing/MousePro/releases/download/v3.7.0/MousePro-macOS.zip",
                 "size": 456,
                 "sha256": "b" * 64,
             },
@@ -142,17 +142,17 @@ class UpdateInstallerTests(unittest.TestCase):
             build_number_from_version("3.7")
 
     def test_manifest_name_matches_release_url_contract(self):
-        self.assertEqual(manifest_name_for_version("v3.7.0"), "pourinput-v3.7.0-update.json")
+        self.assertEqual(manifest_name_for_version("v3.7.0"), "mousepro-v3.7.0-update.json")
         self.assertTrue(
             manifest_url_for_release("v3.7.0").endswith(
-                "/v3.7.0/pourinput-v3.7.0-update.json"
+                "/v3.7.0/mousepro-v3.7.0-update.json"
             )
         )
 
     def test_manifest_url_can_use_test_endpoint_override(self):
         with patch.dict(
             "os.environ",
-            {"POURINPUT_UPDATE_MANIFEST_URL": "http://127.0.0.1:8765/update.json"},
+            {"MOUSEPRO_UPDATE_MANIFEST_URL": "http://127.0.0.1:8765/update.json"},
         ):
             self.assertEqual(
                 manifest_url_for_release("v3.7.0"),
@@ -160,7 +160,7 @@ class UpdateInstallerTests(unittest.TestCase):
             )
 
     def test_fetch_json_accepts_utf8_bom_response(self):
-        payload = b'\xef\xbb\xbf{"schema": 1, "app_id": "io.github.pour_soi.pourinput"}'
+        payload = b'\xef\xbb\xbf{"schema": 1, "app_id": "io.github.szboboxing.mousepro"}'
 
         with patch("urllib.request.urlopen", return_value=_FakeHTTPResponse(payload)):
             parsed = fetch_json("https://example.test/update.json")
@@ -173,7 +173,7 @@ class UpdateInstallerTests(unittest.TestCase):
 
         self.assertEqual(manifest.version, "3.7.0")
         self.assertEqual(manifest.build_number, 30700)
-        self.assertEqual(manifest.assets["windows-x64"].name, "PourInput-Windows.zip")
+        self.assertEqual(manifest.assets["windows-x64"].name, "MousePro-Windows.zip")
 
     def test_update_manifest_accepts_ci_payload_wrapper(self):
         manifest = verify_update_manifest({"payload": _payload()}, platform_key="windows-x64")
@@ -223,12 +223,12 @@ class UpdateInstallerTests(unittest.TestCase):
 
     def test_archive_validator_accepts_windows_bundle_shape(self):
         with tempfile.TemporaryDirectory() as tmp:
-            archive = Path(tmp) / "PourInput-Windows.zip"
+            archive = Path(tmp) / "MousePro-Windows.zip"
             _zip(
                 archive,
                 [
-                    ("PourInput/PourInput.exe", b"exe"),
-                    ("PourInput/_internal/runtime.dll", b"dll"),
+                    ("MousePro/MousePro.exe", b"exe"),
+                    ("MousePro/_internal/runtime.dll", b"dll"),
                 ],
             )
 
@@ -237,7 +237,7 @@ class UpdateInstallerTests(unittest.TestCase):
                 requirements=ArchiveRequirements(require_windows_app=True),
             )
 
-            self.assertEqual(root, "PourInput")
+            self.assertEqual(root, "MousePro")
 
     def test_archive_validator_rejects_traversal_and_duplicates(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -247,7 +247,7 @@ class UpdateInstallerTests(unittest.TestCase):
                 validate_zip_archive(traversal)
 
             duplicate = Path(tmp) / "dup.zip"
-            _zip(duplicate, [("PourInput/a.txt", b"1"), ("PourInput/A.txt", b"2")])
+            _zip(duplicate, [("MousePro/a.txt", b"1"), ("MousePro/A.txt", b"2")])
             with self.assertRaises(UpdateInstallError) as ctx:
                 validate_zip_archive(duplicate)
             self.assertEqual(ctx.exception.code, "duplicate_archive_entry")
@@ -268,13 +268,13 @@ class UpdateInstallerTests(unittest.TestCase):
                     self.assertEqual(ctx.exception.code, code)
 
         with self.assertRaises(UpdateInstallError) as ctx:
-            _normalized_member_name("PourInput/\x00evil.txt")
+            _normalized_member_name("MousePro/\x00evil.txt")
         self.assertEqual(ctx.exception.code, "unsafe_archive")
 
     def test_archive_validator_rejects_symlink_entries(self):
         with tempfile.TemporaryDirectory() as tmp:
             archive = Path(tmp) / "symlink.zip"
-            info = zipfile.ZipInfo("PourInput/link")
+            info = zipfile.ZipInfo("MousePro/link")
             info.external_attr = (stat.S_IFLNK | 0o777) << 16
             with zipfile.ZipFile(archive, "w") as zf:
                 zf.writestr(info, "target")
@@ -287,7 +287,7 @@ class UpdateInstallerTests(unittest.TestCase):
     def test_archive_validator_rejects_bad_crc(self):
         with tempfile.TemporaryDirectory() as tmp:
             archive = Path(tmp) / "bad-crc.zip"
-            _zip(archive, [("PourInput/file.txt", b"CORRUPT_ME")])
+            _zip(archive, [("MousePro/file.txt", b"CORRUPT_ME")])
             data = bytearray(archive.read_bytes())
             offset = data.index(b"CORRUPT_ME")
             data[offset] = ord("X")
@@ -308,7 +308,7 @@ class UpdateInstallerTests(unittest.TestCase):
             self.assertEqual(ctx.exception.code, "empty_archive")
 
             large = Path(tmp) / "large.zip"
-            _zip(large, [("PourInput/file.bin", b"123456")])
+            _zip(large, [("MousePro/file.bin", b"123456")])
             with self.assertRaises(UpdateInstallError) as ctx:
                 validate_zip_archive(large, max_uncompressed_bytes=5)
             self.assertEqual(ctx.exception.code, "archive_too_large")
@@ -316,7 +316,7 @@ class UpdateInstallerTests(unittest.TestCase):
     def test_archive_validator_rejects_incomplete_windows_bundle_shape(self):
         with tempfile.TemporaryDirectory() as tmp:
             no_exe = Path(tmp) / "no-exe.zip"
-            _zip(no_exe, [("PourInput/_internal/runtime.dll", b"dll")])
+            _zip(no_exe, [("MousePro/_internal/runtime.dll", b"dll")])
             with self.assertRaises(UpdateInstallError) as ctx:
                 validate_zip_archive(
                     no_exe,
@@ -325,7 +325,7 @@ class UpdateInstallerTests(unittest.TestCase):
             self.assertEqual(ctx.exception.code, "missing_entrypoint")
 
             no_runtime = Path(tmp) / "no-runtime.zip"
-            _zip(no_runtime, [("PourInput/PourInput.exe", b"exe")])
+            _zip(no_runtime, [("MousePro/MousePro.exe", b"exe")])
             with self.assertRaises(UpdateInstallError) as ctx:
                 validate_zip_archive(
                     no_runtime,
@@ -335,12 +335,12 @@ class UpdateInstallerTests(unittest.TestCase):
 
     def test_extract_validated_zip_writes_only_inside_stage_dir(self):
         with tempfile.TemporaryDirectory() as tmp:
-            archive = Path(tmp) / "PourInput-Windows.zip"
+            archive = Path(tmp) / "MousePro-Windows.zip"
             _zip(
                 archive,
                 [
-                    ("PourInput/PourInput.exe", b"exe"),
-                    ("PourInput/_internal/runtime.dll", b"dll"),
+                    ("MousePro/MousePro.exe", b"exe"),
+                    ("MousePro/_internal/runtime.dll", b"dll"),
                 ],
             )
             staged = extract_validated_zip(
@@ -349,18 +349,18 @@ class UpdateInstallerTests(unittest.TestCase):
                 requirements=ArchiveRequirements(require_windows_app=True),
             )
 
-            self.assertTrue((staged.app_root / "PourInput.exe").exists())
+            self.assertTrue((staged.app_root / "MousePro.exe").exists())
             self.assertTrue((staged.app_root / "_internal" / "runtime.dll").exists())
 
     def test_extract_validated_zip_removes_partial_stage_on_failure(self):
         with tempfile.TemporaryDirectory() as tmp:
-            archive = Path(tmp) / "PourInput-Windows.zip"
+            archive = Path(tmp) / "MousePro-Windows.zip"
             stage = Path(tmp) / "stage"
             _zip(
                 archive,
                 [
-                    ("PourInput/PourInput.exe", b"exe"),
-                    ("PourInput/_internal/runtime.dll", b"dll"),
+                    ("MousePro/MousePro.exe", b"exe"),
+                    ("MousePro/_internal/runtime.dll", b"dll"),
                 ],
             )
 
@@ -381,7 +381,7 @@ class UpdateInstallerTests(unittest.TestCase):
 
     def test_extract_validated_zip_rejects_member_size_mismatch(self):
         class _FakeInfo:
-            filename = "PourInput/PourInput.exe"
+            filename = "MousePro/MousePro.exe"
             file_size = 1
             external_attr = 0
 
@@ -389,7 +389,7 @@ class UpdateInstallerTests(unittest.TestCase):
                 return False
 
         class _FakeRuntimeInfo:
-            filename = "PourInput/_internal/runtime.dll"
+            filename = "MousePro/_internal/runtime.dll"
             file_size = 1
             external_attr = 0
 
@@ -416,7 +416,7 @@ class UpdateInstallerTests(unittest.TestCase):
                 return io.BytesIO(b"too large")
 
         with tempfile.TemporaryDirectory() as tmp:
-            archive = Path(tmp) / "PourInput-Windows.zip"
+            archive = Path(tmp) / "MousePro-Windows.zip"
             archive.write_bytes(b"not used by fake zip")
             stage = Path(tmp) / "stage"
 
@@ -447,17 +447,17 @@ class UpdateInstallerTests(unittest.TestCase):
             assets={
                 "macos-arm64": UpdateAsset(
                     "macos-arm64",
-                    "PourInput-macOS.zip",
-                    "https://example.test/PourInput-macOS.zip",
+                    "MousePro-macOS.zip",
+                    "https://example.test/MousePro-macOS.zip",
                     1,
                     "a" * 64,
                 )
             },
         )
         runtime = RuntimeLocation(
-            executable=Path("/Applications/PourInput.app/Contents/MacOS/PourInput"),
-            install_root=Path("/Applications/PourInput.app"),
-            app_data_dir=Path("/tmp/PourInput"),
+            executable=Path("/Applications/MousePro.app/Contents/MacOS/MousePro"),
+            install_root=Path("/Applications/MousePro.app"),
+            app_data_dir=Path("/tmp/MousePro"),
             frozen=True,
             platform_key="macos-arm64",
             update_supported=False,
@@ -486,9 +486,9 @@ class UpdateInstallerTests(unittest.TestCase):
             self.assertFalse(source_runtime.update_supported)
             self.assertEqual(source_runtime.reason, "source run")
 
-            install = root / "PourInput Install With Spaces"
+            install = root / "MousePro Install With Spaces"
             install.mkdir()
-            exe = install / "PourInput.exe"
+            exe = install / "MousePro.exe"
             exe.write_text("exe", encoding="utf-8")
             (install / "_internal").mkdir()
             windows_runtime = locate_runtime(
@@ -501,7 +501,7 @@ class UpdateInstallerTests(unittest.TestCase):
             self.assertEqual(windows_runtime.install_root, install.resolve())
 
             mac_runtime = locate_runtime(
-                executable=root / "PourInput.app" / "Contents" / "MacOS" / "PourInput",
+                executable=root / "MousePro.app" / "Contents" / "MacOS" / "MousePro",
                 sys_platform="darwin",
                 frozen=True,
                 app_data_dir=root / "data",
@@ -512,7 +512,7 @@ class UpdateInstallerTests(unittest.TestCase):
     def test_locate_runtime_rejects_unsupported_windows_layout(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            exe = root / "PourInput.exe"
+            exe = root / "MousePro.exe"
             exe.write_text("exe", encoding="utf-8")
 
             runtime = locate_runtime(
@@ -528,9 +528,9 @@ class UpdateInstallerTests(unittest.TestCase):
     def test_locate_runtime_rejects_windows_install_parent_without_write_probe(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            install = root / "PourInput"
+            install = root / "MousePro"
             install.mkdir()
-            exe = install / "PourInput.exe"
+            exe = install / "MousePro.exe"
             exe.write_text("exe", encoding="utf-8")
             (install / "_internal").mkdir()
 
@@ -570,7 +570,7 @@ class UpdateInstallerTests(unittest.TestCase):
             source.write_bytes(b"verified")
             asset = UpdateAsset(
                 "windows-x64",
-                "PourInput-Windows.zip",
+                "MousePro-Windows.zip",
                 source.as_uri(),
                 source.stat().st_size,
                 sha256_file(source),
@@ -589,13 +589,13 @@ class UpdateInstallerTests(unittest.TestCase):
     def test_prepare_downloaded_asset_uses_default_download_timeout(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            target_path = root / "downloads" / "PourInput-Windows.zip"
+            target_path = root / "downloads" / "MousePro-Windows.zip"
             target_path.parent.mkdir()
             target_path.write_bytes(b"verified")
             asset = UpdateAsset(
                 "windows-x64",
-                "PourInput-Windows.zip",
-                "https://example.invalid/PourInput-Windows.zip",
+                "MousePro-Windows.zip",
+                "https://example.invalid/MousePro-Windows.zip",
                 target_path.stat().st_size,
                 sha256_file(target_path),
             )
@@ -613,13 +613,13 @@ class UpdateInstallerTests(unittest.TestCase):
     def test_prepare_downloaded_asset_honors_explicit_download_timeout(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            target_path = root / "downloads" / "PourInput-Windows.zip"
+            target_path = root / "downloads" / "MousePro-Windows.zip"
             target_path.parent.mkdir()
             target_path.write_bytes(b"verified")
             asset = UpdateAsset(
                 "windows-x64",
-                "PourInput-Windows.zip",
-                "https://example.invalid/PourInput-Windows.zip",
+                "MousePro-Windows.zip",
+                "https://example.invalid/MousePro-Windows.zip",
                 target_path.stat().st_size,
                 sha256_file(target_path),
             )
@@ -649,19 +649,19 @@ class UpdateInstallerTests(unittest.TestCase):
             self.assertFalse(target.exists())
 
     def test_same_volume_windows_stage_dir_is_adjacent_to_install_root(self):
-        install_root = Path("C:/Users/example/PourInput")
+        install_root = Path("C:/Users/example/MousePro")
 
         stage_dir = same_volume_windows_stage_dir(install_root, "v3.7.0/test", pid=42)
 
         self.assertEqual(stage_dir.parent, install_root.resolve().parent)
-        self.assertEqual(stage_dir.name, ".PourInput.update-v3.7.0-test-42")
+        self.assertEqual(stage_dir.name, ".MousePro.update-v3.7.0-test-42")
 
     def test_launch_windows_helper_copies_executable_outside_install_root(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             install = root / "install"
             install.mkdir()
-            exe = install / "PourInput.exe"
+            exe = install / "MousePro.exe"
             exe.write_text("exe", encoding="utf-8")
             internal = install / "_internal"
             internal.mkdir()
@@ -673,7 +673,7 @@ class UpdateInstallerTests(unittest.TestCase):
 
             helper = stage_windows_update_helper(exe, helper_dir)
             self.assertTrue(helper.exists())
-            self.assertEqual(helper, (helper_dir / "PourInputUpdateHelper" / "PourInput.exe").resolve())
+            self.assertEqual(helper, (helper_dir / "MouseProUpdateHelper" / "MousePro.exe").resolve())
             self.assertNotEqual(helper.parent, install)
             self.assertTrue((helper.parent / "_internal" / "python312.dll").exists())
 
@@ -685,9 +685,9 @@ class UpdateInstallerTests(unittest.TestCase):
             )
 
             argv, cwd, env = runner.popen_calls[0]
-            self.assertEqual(Path(argv[0]).parent, (helper_dir / "PourInputUpdateHelper").resolve())
-            self.assertEqual(argv[1:], ["--pourinput-apply-update", str(plan_path)])
-            self.assertEqual(cwd, str((helper_dir / "PourInputUpdateHelper").resolve()))
+            self.assertEqual(Path(argv[0]).parent, (helper_dir / "MouseProUpdateHelper").resolve())
+            self.assertEqual(argv[1:], ["--mousepro-apply-update", str(plan_path)])
+            self.assertEqual(cwd, str((helper_dir / "MouseProUpdateHelper").resolve()))
             self.assertEqual(env["PYINSTALLER_RESET_ENVIRONMENT"], "1")
 
     def test_pid_exists_windows_uses_wait_handle_without_os_kill(self):
@@ -773,7 +773,7 @@ class UpdateInstallerTests(unittest.TestCase):
             root = Path(tmp)
             install = root / "install"
             install.mkdir()
-            exe = install / "PourInput.exe"
+            exe = install / "MousePro.exe"
             exe.write_text("exe", encoding="utf-8")
 
             with self.assertRaises(UpdateInstallError) as ctx:
@@ -797,10 +797,10 @@ class UpdateInstallerTests(unittest.TestCase):
             state = root / "pending-update.json"
             install.mkdir()
             staged.mkdir(parents=True)
-            (install / "PourInput.exe").write_text("old", encoding="utf-8")
+            (install / "MousePro.exe").write_text("old", encoding="utf-8")
             (install / "_internal").mkdir()
-            (staged / "PourInput.exe").write_text("new", encoding="utf-8")
-            (staged / "PourInput.exe").chmod(0o755)
+            (staged / "MousePro.exe").write_text("new", encoding="utf-8")
+            (staged / "MousePro.exe").chmod(0o755)
             (staged / "_internal").mkdir()
             plan = WindowsUpdatePlan(
                 current_pid=123,
@@ -817,25 +817,25 @@ class UpdateInstallerTests(unittest.TestCase):
                 result = apply_windows_update_from_state(state, runner=runner)
 
             self.assertEqual(result, 0)
-            self.assertEqual((install / "PourInput.exe").read_text(encoding="utf-8"), "new")
-            self.assertEqual((backup / "PourInput.exe").read_text(encoding="utf-8"), "old")
+            self.assertEqual((install / "MousePro.exe").read_text(encoding="utf-8"), "new")
+            self.assertEqual((backup / "MousePro.exe").read_text(encoding="utf-8"), "old")
             self.assertEqual(read_update_result(marker)["status"], "installed")
             self.assertEqual(len(runner.popen_calls), 1)
 
     def test_apply_windows_update_from_state_restores_backup_after_transient_rollback_failure(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            install = root / "PourInput"
+            install = root / "MousePro"
             stage_parent = same_volume_windows_stage_dir(install, "v3.7.0", pid=83)
-            staged = stage_parent / "PourInput"
-            backup = root / "PourInput.backup-123"
+            staged = stage_parent / "MousePro"
+            backup = root / "MousePro.backup-123"
             marker = root / "last-update-result.txt"
             state = root / "pending-update.json"
             install.mkdir()
             staged.mkdir(parents=True)
-            (install / "PourInput.exe").write_text("old", encoding="utf-8")
+            (install / "MousePro.exe").write_text("old", encoding="utf-8")
             (install / "_internal").mkdir()
-            (staged / "PourInput.exe").write_text("new", encoding="utf-8")
+            (staged / "MousePro.exe").write_text("new", encoding="utf-8")
             (staged / "_internal").mkdir()
             plan = WindowsUpdatePlan(
                 current_pid=123,
@@ -868,7 +868,7 @@ class UpdateInstallerTests(unittest.TestCase):
 
             self.assertEqual(result, 1)
             self.assertEqual(rollback_attempts["count"], 2)
-            self.assertEqual((install / "PourInput.exe").read_text(encoding="utf-8"), "old")
+            self.assertEqual((install / "MousePro.exe").read_text(encoding="utf-8"), "old")
             update_result = read_update_result(marker)
             self.assertEqual(update_result["status"], "failed")
             self.assertIn("replacement locked", update_result["message"])
@@ -876,17 +876,17 @@ class UpdateInstallerTests(unittest.TestCase):
     def test_apply_windows_update_from_state_reports_backup_path_when_rollback_fails(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            install = root / "PourInput"
+            install = root / "MousePro"
             stage_parent = same_volume_windows_stage_dir(install, "v3.7.0", pid=84)
-            staged = stage_parent / "PourInput"
-            backup = root / "PourInput.backup-123"
+            staged = stage_parent / "MousePro"
+            backup = root / "MousePro.backup-123"
             marker = root / "last-update-result.txt"
             state = root / "pending-update.json"
             install.mkdir()
             staged.mkdir(parents=True)
-            (install / "PourInput.exe").write_text("old", encoding="utf-8")
+            (install / "MousePro.exe").write_text("old", encoding="utf-8")
             (install / "_internal").mkdir()
-            (staged / "PourInput.exe").write_text("new", encoding="utf-8")
+            (staged / "MousePro.exe").write_text("new", encoding="utf-8")
             (staged / "_internal").mkdir()
             plan = WindowsUpdatePlan(
                 current_pid=123,
@@ -933,10 +933,10 @@ class UpdateInstallerTests(unittest.TestCase):
             state = root / "pending-update.json"
             install.mkdir()
             staged.mkdir(parents=True)
-            (install / "PourInput.exe").write_text("old", encoding="utf-8")
+            (install / "MousePro.exe").write_text("old", encoding="utf-8")
             (install / "_internal").mkdir()
-            (staged / "PourInput.exe").write_text("new", encoding="utf-8")
-            (staged / "PourInput.exe").chmod(0o755)
+            (staged / "MousePro.exe").write_text("new", encoding="utf-8")
+            (staged / "MousePro.exe").chmod(0o755)
             (staged / "_internal").mkdir()
             plan = WindowsUpdatePlan(
                 current_pid=123,
@@ -952,7 +952,7 @@ class UpdateInstallerTests(unittest.TestCase):
                 result = apply_windows_update_from_state(state, runner=runner)
 
             self.assertEqual(result, 0)
-            self.assertEqual((install / "PourInput.exe").read_text(encoding="utf-8"), "new")
+            self.assertEqual((install / "MousePro.exe").read_text(encoding="utf-8"), "new")
             self.assertEqual(len(runner.popen_calls), 1)
 
     def test_apply_windows_update_from_state_rejects_malformed_paths_before_rename(self):
@@ -966,9 +966,9 @@ class UpdateInstallerTests(unittest.TestCase):
             install.mkdir()
             staged.mkdir()
             outside.mkdir()
-            (install / "PourInput.exe").write_text("old", encoding="utf-8")
+            (install / "MousePro.exe").write_text("old", encoding="utf-8")
             (install / "_internal").mkdir()
-            (staged / "PourInput.exe").write_text("new", encoding="utf-8")
+            (staged / "MousePro.exe").write_text("new", encoding="utf-8")
             (staged / "_internal").mkdir()
             (outside / "keep.txt").write_text("keep", encoding="utf-8")
             plan = WindowsUpdatePlan(
@@ -983,29 +983,29 @@ class UpdateInstallerTests(unittest.TestCase):
             result = apply_windows_update_from_state(state)
 
             self.assertEqual(result, 1)
-            self.assertEqual((install / "PourInput.exe").read_text(encoding="utf-8"), "old")
+            self.assertEqual((install / "MousePro.exe").read_text(encoding="utf-8"), "old")
             self.assertEqual((outside / "keep.txt").read_text(encoding="utf-8"), "keep")
             self.assertEqual(read_update_result(marker)["status"], "failed")
 
     def test_apply_windows_update_from_state_rejects_mismatched_staged_root_name(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            install = root / "PourInput"
+            install = root / "MousePro"
             stage_parent = same_volume_windows_stage_dir(install, "v3.7.0", pid=79)
             staged = stage_parent / "Other"
             marker = root / "last-update-result.txt"
             state = root / "pending-update.json"
             install.mkdir()
             staged.mkdir(parents=True)
-            (install / "PourInput.exe").write_text("old", encoding="utf-8")
+            (install / "MousePro.exe").write_text("old", encoding="utf-8")
             (install / "_internal").mkdir()
-            (staged / "PourInput.exe").write_text("new", encoding="utf-8")
+            (staged / "MousePro.exe").write_text("new", encoding="utf-8")
             (staged / "_internal").mkdir()
             plan = WindowsUpdatePlan(
                 current_pid=123,
                 install_root=str(install),
                 staged_root=str(staged),
-                backup_root=str(root / "PourInput.backup-123"),
+                backup_root=str(root / "MousePro.backup-123"),
                 result_marker=str(marker),
             )
             write_windows_update_plan(plan, state)
@@ -1013,24 +1013,24 @@ class UpdateInstallerTests(unittest.TestCase):
             result = apply_windows_update_from_state(state)
 
             self.assertEqual(result, 1)
-            self.assertEqual((install / "PourInput.exe").read_text(encoding="utf-8"), "old")
+            self.assertEqual((install / "MousePro.exe").read_text(encoding="utf-8"), "old")
             self.assertEqual(read_update_result(marker)["status"], "failed")
 
     def test_apply_windows_update_from_state_rejects_existing_backup_without_deleting(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            install = root / "PourInput"
+            install = root / "MousePro"
             stage_parent = same_volume_windows_stage_dir(install, "v3.7.0", pid=80)
-            staged = stage_parent / "PourInput"
-            backup = root / "PourInput.backup-123"
+            staged = stage_parent / "MousePro"
+            backup = root / "MousePro.backup-123"
             marker = root / "last-update-result.txt"
             state = root / "pending-update.json"
             install.mkdir()
             staged.mkdir(parents=True)
             backup.mkdir()
-            (install / "PourInput.exe").write_text("old", encoding="utf-8")
+            (install / "MousePro.exe").write_text("old", encoding="utf-8")
             (install / "_internal").mkdir()
-            (staged / "PourInput.exe").write_text("new", encoding="utf-8")
+            (staged / "MousePro.exe").write_text("new", encoding="utf-8")
             (staged / "_internal").mkdir()
             (backup / "keep.txt").write_text("keep", encoding="utf-8")
             plan = WindowsUpdatePlan(
@@ -1046,30 +1046,30 @@ class UpdateInstallerTests(unittest.TestCase):
                 result = apply_windows_update_from_state(state)
 
             self.assertEqual(result, 1)
-            self.assertEqual((install / "PourInput.exe").read_text(encoding="utf-8"), "old")
+            self.assertEqual((install / "MousePro.exe").read_text(encoding="utf-8"), "old")
             self.assertEqual((backup / "keep.txt").read_text(encoding="utf-8"), "keep")
             self.assertEqual(read_update_result(marker)["status"], "failed")
 
     def test_apply_windows_update_from_state_rejects_external_result_marker_safely(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            install = root / "PourInput"
+            install = root / "MousePro"
             stage_parent = same_volume_windows_stage_dir(install, "v3.7.0", pid=81)
-            staged = stage_parent / "PourInput"
+            staged = stage_parent / "MousePro"
             external = root / "external"
             state = root / "pending-update.json"
             install.mkdir()
             staged.mkdir(parents=True)
             external.mkdir()
-            (install / "PourInput.exe").write_text("old", encoding="utf-8")
+            (install / "MousePro.exe").write_text("old", encoding="utf-8")
             (install / "_internal").mkdir()
-            (staged / "PourInput.exe").write_text("new", encoding="utf-8")
+            (staged / "MousePro.exe").write_text("new", encoding="utf-8")
             (staged / "_internal").mkdir()
             plan = WindowsUpdatePlan(
                 current_pid=123,
                 install_root=str(install),
                 staged_root=str(staged),
-                backup_root=str(root / "PourInput.backup-123"),
+                backup_root=str(root / "MousePro.backup-123"),
                 result_marker=str(external / "last-update-result.txt"),
             )
             state.write_text(json.dumps(plan.to_dict()), encoding="utf-8")
@@ -1080,7 +1080,7 @@ class UpdateInstallerTests(unittest.TestCase):
             self.assertFalse((external / "last-update-result.txt").exists())
             safe_marker = root / "last-update-result.txt"
             self.assertEqual(read_update_result(safe_marker)["status"], "failed")
-            self.assertEqual((install / "PourInput.exe").read_text(encoding="utf-8"), "old")
+            self.assertEqual((install / "MousePro.exe").read_text(encoding="utf-8"), "old")
 
     def test_apply_windows_update_from_state_reports_unreadable_plan_to_safe_marker(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -1115,22 +1115,22 @@ class UpdateInstallerTests(unittest.TestCase):
     def test_apply_windows_update_from_state_rejects_non_positive_pid(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            install = root / "PourInput"
+            install = root / "MousePro"
             stage_parent = same_volume_windows_stage_dir(install, "v3.7.0", pid=82)
-            staged = stage_parent / "PourInput"
+            staged = stage_parent / "MousePro"
             marker = root / "last-update-result.txt"
             state = root / "pending-update.json"
             install.mkdir()
             staged.mkdir(parents=True)
-            (install / "PourInput.exe").write_text("old", encoding="utf-8")
+            (install / "MousePro.exe").write_text("old", encoding="utf-8")
             (install / "_internal").mkdir()
-            (staged / "PourInput.exe").write_text("new", encoding="utf-8")
+            (staged / "MousePro.exe").write_text("new", encoding="utf-8")
             (staged / "_internal").mkdir()
             plan = WindowsUpdatePlan(
                 current_pid=0,
                 install_root=str(install),
                 staged_root=str(staged),
-                backup_root=str(root / "PourInput.backup-123"),
+                backup_root=str(root / "MousePro.backup-123"),
                 result_marker=str(marker),
             )
             write_windows_update_plan(plan, state)
@@ -1138,23 +1138,23 @@ class UpdateInstallerTests(unittest.TestCase):
             result = apply_windows_update_from_state(state)
 
             self.assertEqual(result, 1)
-            self.assertEqual((install / "PourInput.exe").read_text(encoding="utf-8"), "old")
+            self.assertEqual((install / "MousePro.exe").read_text(encoding="utf-8"), "old")
             self.assertEqual(read_update_result(marker)["status"], "failed")
 
     def test_cleanup_stale_update_state_removes_pending_staging_and_helper(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            install = root / "install" / "PourInput"
+            install = root / "install" / "MousePro"
             install.mkdir(parents=True)
             stage_parent = same_volume_windows_stage_dir(install, "v3.7.0", pid=99)
-            staged_root = stage_parent / "PourInput"
+            staged_root = stage_parent / "MousePro"
             staged_root.mkdir(parents=True)
-            (staged_root / "PourInput.exe").write_text("new", encoding="utf-8")
+            (staged_root / "MousePro.exe").write_text("new", encoding="utf-8")
             plan = WindowsUpdatePlan(
                 current_pid=0,
                 install_root=str(install),
                 staged_root=str(staged_root),
-                backup_root=str(root / "install" / "PourInput.backup"),
+                backup_root=str(root / "install" / "MousePro.backup"),
                 result_marker=str(root / "last-update-result.txt"),
             )
             (root / "pending-update.json").write_text(

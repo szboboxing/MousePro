@@ -16,7 +16,7 @@
 
 ### Window size and framing
 
-- Capture the current default PourInput window at **1060 × 700 logical px** unless the screenshot's purpose is minimum-window validation.
+- Capture the current default MousePro window at **1060 × 700 logical px** unless the screenshot's purpose is minimum-window validation.
 - Capture the small-window case at the implemented **920 × 620 logical px** minimum.
 - Keep the same logical dimensions across DPI scales. Do not resize by eye after changing OS scale.
 - Preserve the complete application window, including native title bar and visible window edges, for release evidence.
@@ -81,7 +81,7 @@ At each scale inspect:
 
 ## Pages and variants
 
-Recommended PourInput production/release set:
+Recommended MousePro production/release set:
 
 1. Main Mouse & Profiles page with the primary workspace visible.
 2. Generic Mouse Mode state on Windows.
@@ -100,13 +100,13 @@ Capture feature-dependent cards only when the build/device supports them. Do not
 
 The current repository stores referenced screenshots in `images/`. Continue using that location until a separately approved repository migration establishes another production path. Use descriptive names for new files:
 
-`pourinput_<page>_<mode>_<language>_<scale>.png`
+`mousepro_<page>_<mode>_<language>_<scale>.png`
 
 Examples:
 
-- `pourinput_mouse_light_en_100.png`
-- `pourinput_settings_dark_zh-cn_150.png`
-- `pourinput_about_light_en_100.png`
+- `mousepro_mouse_light_en_100.png`
+- `mousepro_settings_dark_zh-cn_150.png`
+- `mousepro_about_light_en_100.png`
 
 The README homepage uses explicit language-specific names for its matched English and Simplified Chinese screenshot sets:
 

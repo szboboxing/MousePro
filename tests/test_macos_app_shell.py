@@ -14,10 +14,10 @@ except Exception:  # pragma: no cover - env without PySide6 / project deps
 @unittest.skipIf(main_qml is None, "main_qml / PySide6 not available")
 class MacOSLauncherPathTests(unittest.TestCase):
     def test_named_executable_uses_venv_shim_directory(self):
-        executable = "/tmp/PourInput/.venv/bin/python"
+        executable = "/tmp/MousePro/.venv/bin/python"
 
         def fake_isfile(path):
-            return path in {executable, "/tmp/PourInput/.venv/pyvenv.cfg"}
+            return path in {executable, "/tmp/MousePro/.venv/pyvenv.cfg"}
 
         with (
             patch.object(main_qml.sys, "executable", executable),
@@ -25,18 +25,18 @@ class MacOSLauncherPathTests(unittest.TestCase):
         ):
             self.assertEqual(
                 main_qml._macos_named_executable_path(),
-                "/tmp/PourInput/.venv/bin/PourInput",
+                "/tmp/MousePro/.venv/bin/MousePro",
             )
 
     def test_named_executable_uses_project_fallback_outside_venv(self):
         with (
             patch.object(main_qml.sys, "executable", "/usr/bin/python3"),
             patch.object(main_qml.os.path, "isfile", return_value=False),
-            patch.object(main_qml, "ROOT", "/tmp/PourInput"),
+            patch.object(main_qml, "ROOT", "/tmp/MousePro"),
         ):
             self.assertEqual(
                 main_qml._macos_named_executable_path(),
-                "/tmp/PourInput/build/macos/bin/PourInput",
+                "/tmp/MousePro/build/macos/bin/MousePro",
             )
 
     def test_relaunch_noops_off_macos(self):
@@ -44,16 +44,16 @@ class MacOSLauncherPathTests(unittest.TestCase):
             patch.object(main_qml.sys, "platform", "linux"),
             patch.object(main_qml.os, "execv") as execv,
         ):
-            main_qml._maybe_relaunch_with_POURINPUT_process_name()
+            main_qml._maybe_relaunch_with_MOUSEPRO_process_name()
         execv.assert_not_called()
 
     def test_relaunch_stages_symlink_and_execs_named_path(self):
-        executable = "/tmp/PourInput/.venv/bin/python"
-        target = "/tmp/PourInput/.venv/bin/PourInput"
+        executable = "/tmp/MousePro/.venv/bin/python"
+        target = "/tmp/MousePro/.venv/bin/MousePro"
         staging = f"{target}.staging.1234"
 
         def fake_isfile(path):
-            return path in {executable, "/tmp/PourInput/.venv/pyvenv.cfg"}
+            return path in {executable, "/tmp/MousePro/.venv/pyvenv.cfg"}
 
         with (
             patch.object(main_qml.sys, "platform", "darwin"),
@@ -67,9 +67,9 @@ class MacOSLauncherPathTests(unittest.TestCase):
             patch.object(main_qml.os, "execv") as execv,
             patch.dict(main_qml.os.environ, {}, clear=True),
         ):
-            main_qml._maybe_relaunch_with_POURINPUT_process_name()
+            main_qml._maybe_relaunch_with_MOUSEPRO_process_name()
 
-        makedirs.assert_called_once_with("/tmp/PourInput/.venv/bin", exist_ok=True)
+        makedirs.assert_called_once_with("/tmp/MousePro/.venv/bin", exist_ok=True)
         symlink.assert_called_once_with(executable, staging)
         replace.assert_called_once_with(staging, target)
         execv.assert_called_once_with(target, [target, "main_qml.py", "--show-window"])
@@ -80,25 +80,25 @@ class AppIdentityTests(unittest.TestCase):
     def test_app_icon_uses_linux_runtime_asset(self):
         with (
             patch.object(main_qml.sys, "platform", "linux"),
-            patch.object(main_qml, "linux_runtime_icon_path", return_value="/tmp/PourInput/linux/icons/hicolor/256x256/apps/io.github.pour_soi.pourinput.png"),
+            patch.object(main_qml, "linux_runtime_icon_path", return_value="/tmp/MousePro/linux/icons/hicolor/256x256/apps/io.github.szboboxing.mousepro.png"),
             patch.object(main_qml.os.path, "isfile", return_value=True),
             patch.object(main_qml, "QIcon", side_effect=lambda path: path),
         ):
             self.assertEqual(
                 main_qml._app_icon(),
-                "/tmp/PourInput/linux/icons/hicolor/256x256/apps/io.github.pour_soi.pourinput.png",
+                "/tmp/MousePro/linux/icons/hicolor/256x256/apps/io.github.szboboxing.mousepro.png",
             )
 
     def test_app_icon_uses_ico_on_windows(self):
         with (
             patch.object(main_qml.sys, "platform", "win32"),
-            patch.object(main_qml, "ROOT", "/tmp/PourInput"),
+            patch.object(main_qml, "ROOT", "/tmp/MousePro"),
             patch.object(main_qml.os.path, "isfile", return_value=True),
             patch.object(main_qml, "QIcon", side_effect=lambda path: path),
         ):
             self.assertEqual(
                 main_qml._app_icon(),
-                "/tmp/PourInput/images/logo.ico",
+                "/tmp/MousePro/images/logo.ico",
             )
 
     def test_windows_app_user_model_id_is_set_on_windows(self):
@@ -385,7 +385,7 @@ class MacOSQuitAndAccessibilityTests(unittest.TestCase):
 
         callback()
         tray.showMessage.assert_called_once_with(
-            "PourInput",
+            "MousePro",
             "translated:tray.tray_message",
             main_qml.QSystemTrayIcon.MessageIcon.Information,
             5000,

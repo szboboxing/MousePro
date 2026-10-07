@@ -1,4 +1,4 @@
-# PourInput v1.4.3 feature gallery
+# MousePro v1.4.3 feature gallery
 
 [Back to homepage](../README.md) · [简体中文](FEATURES_CN.md)
 

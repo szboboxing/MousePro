@@ -10,6 +10,7 @@ Rectangle {
     property string actionId: ""
     property string actionLabel: ""
     property bool isCurrent: false
+    property bool isMousePro: false
 
     signal picked(string aid)
 
@@ -25,9 +26,17 @@ Rectangle {
            ? theme.accent
            : chipMa.containsMouse
              ? theme.bgCardHover
-             : theme.bgCard
+             : isMousePro
+               ? theme.accentDim
+               : theme.bgCard
     border.width: activeFocus ? 2 : 1
-    border.color: isCurrent ? theme.accent : activeFocus ? theme.accent : theme.border
+    border.color: isCurrent
+                  ? theme.accent
+                  : isMousePro
+                    ? theme.accent
+                    : activeFocus
+                      ? theme.accent
+                      : theme.border
 
     Behavior on color { ColorAnimation { duration: 120 } }
 
@@ -40,7 +49,11 @@ Rectangle {
         anchors.centerIn: parent
         text: actionLabel
         font { family: uiState.fontFamily; pixelSize: 12 }
-        color: isCurrent ? theme.bgSidebar : theme.textPrimary
+        color: isCurrent
+               ? theme.bgSidebar
+               : isMousePro
+                 ? theme.accent
+                 : theme.textPrimary
     }
 
     MouseArea {

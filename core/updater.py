@@ -15,9 +15,9 @@ import urllib.request
 from core.version import APP_NAME, APP_VERSION
 
 
-DEFAULT_RELEASE_REPO = "pour-soi/PourInput"
+DEFAULT_RELEASE_REPO = "szboboxing/MousePro"
 _GITHUB_API = "https://api.github.com/repos/{repo}/releases/latest"
-_LATEST_RELEASE_URL_ENV = "POURINPUT_UPDATE_LATEST_RELEASE_URL"
+_LATEST_RELEASE_URL_ENV = "MOUSEPRO_UPDATE_LATEST_RELEASE_URL"
 _USER_AGENT = f"{APP_NAME}/{APP_VERSION}"
 DEFAULT_AUTO_CHECK_INTERVAL_SECONDS = 24 * 60 * 60
 

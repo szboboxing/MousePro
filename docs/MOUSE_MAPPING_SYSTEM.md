@@ -1,4 +1,4 @@
-# PourInput Mouse Mapping System
+# MousePro Mouse Mapping System
 
 This document describes the implemented button-to-action pipeline. Profile ownership is in [PROFILE_SYSTEM.md](PROFILE_SYSTEM.md), and end-to-end sequences are in [EVENT_FLOW.md](EVENT_FLOW.md).
 

@@ -1,4 +1,4 @@
-# PourInput v1.4.3 功能图集
+# 鼠标Pro v1.4.3 功能图集
 
 [返回中文主页](../README_CN.md) · [English](FEATURES.md)
 

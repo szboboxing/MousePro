@@ -28,8 +28,14 @@ from core.key_simulator import MOUSEEVENTF_HWHEEL, MOUSEEVENTF_WHEEL
 from core.key_simulator import inject_scroll as _inject_scroll_impl
 from core.mouse_hook_base import BaseMouseHook, HidGestureListener
 from core.mouse_hook_types import MouseEvent
+from core.right_hold_gesture import RightHoldGestureState
 
 WH_MOUSE_LL = 14
+WM_MOUSEMOVE = 0x0200
+WM_LBUTTONDOWN = 0x0201
+WM_LBUTTONUP = 0x0202
+WM_RBUTTONDOWN = 0x0204
+WM_RBUTTONUP = 0x0205
 WM_XBUTTONDOWN = 0x020B
 WM_XBUTTONUP = 0x020C
 WM_MBUTTONDOWN = 0x0207
@@ -41,6 +47,19 @@ WM_POWERBROADCAST = 0x0218
 HC_ACTION = 0
 XBUTTON1 = 0x0001
 XBUTTON2 = 0x0002
+
+MOUSEEVENTF_RIGHTDOWN = 0x0008
+MOUSEEVENTF_RIGHTUP = 0x0010
+
+mouse_event = windll.user32.mouse_event
+mouse_event.restype = ctypes.c_void_p
+mouse_event.argtypes = [
+    c_ulong,
+    c_ulong,
+    c_ulong,
+    c_ulong,
+    ctypes.c_size_t,
+]
 
 
 class MSLLHOOKSTRUCT(Structure):
@@ -307,7 +326,7 @@ class MouseHook(BaseMouseHook):
         # a garbage-collected replacement callback.
         self._ri_wndproc_ref = WNDPROC_TYPE(self._ri_wndproc)
         self._ri_class_name = (
-            f"PourInputRawInput_{id(self):X}_{time.monotonic_ns():X}"
+            f"MouseProRawInput_{id(self):X}_{time.monotonic_ns():X}"
         )
         self._ri_class_registered = False
         self._ri_hwnd = None
@@ -324,6 +343,146 @@ class MouseHook(BaseMouseHook):
         self._last_rehook_time = 0
         self._init_dispatch_queue(maxsize=512)
         self._dispatch_worker_thread = None
+
+        # ── MousePro right-hold chord / raw observer / button test ──
+        self._mp_gesture = RightHoldGestureState()
+        self._mp_pending_side_release = set()
+        self._mp_enabled_cb = None
+        self._mp_buttons_cb = None
+        self._mp_fire_cb = None
+        self._mp_active_test_cb = None
+        self._mp_raw_observer = None
+        self._mp_test_mode = False
+
+    # ------------------------------------------------------------------
+    # MousePro enhancement wiring (only used by the Windows backend)
+    # ------------------------------------------------------------------
+
+    def set_right_hold_config(self, enabled_cb, buttons_cb, fire_cb,
+                              active_test_cb):
+        """Install live callbacks for the right-hold gesture chord.
+
+        enabled_cb()      -> bool, feature enabled;
+        buttons_cb()      -> list[str] subset of xbutton1/xbutton2;
+        fire_cb(action)   -> dispatched off the hook thread by the engine;
+        active_test_cb()  -> bool, UI capture mode (test/confirm) active.
+        """
+        self._mp_enabled_cb = enabled_cb
+        self._mp_buttons_cb = buttons_cb
+        self._mp_fire_cb = fire_cb
+        self._mp_active_test_cb = active_test_cb
+
+    def set_raw_observer(self, callback):
+        """Receive a dict for every physical (never injected) event."""
+        self._mp_raw_observer = callback
+
+    def set_test_mode(self, enabled):
+        """Button test mode: observe only, never swallow or run the chord."""
+        self._mp_test_mode = bool(enabled)
+        if self._mp_test_mode:
+            self._mp_gesture.cancel()
+            self._mp_pending_side_release.clear()
+
+    def _mp_chord_allowed(self):
+        if self._mp_test_mode:
+            return False
+        try:
+            if self._mp_active_test_cb is not None and self._mp_active_test_cb():
+                return False
+        except Exception:
+            pass
+        try:
+            return bool(
+                self._mp_enabled_cb is not None and self._mp_enabled_cb()
+            )
+        except Exception:
+            return False
+
+    def _mp_configured_side_buttons(self):
+        try:
+            buttons = self._mp_buttons_cb() if self._mp_buttons_cb else None
+        except Exception:
+            buttons = None
+        if not isinstance(buttons, (list, tuple, set, frozenset)):
+            return set()
+        result = set()
+        for name in buttons:
+            if name == "xbutton1":
+                result.add(XBUTTON1)
+            elif name == "xbutton2":
+                result.add(XBUTTON2)
+        return result
+
+    def _mp_fire(self, action_id):
+        fire_cb = self._mp_fire_cb
+        if fire_cb is None:
+            return
+        try:
+            fire_cb(action_id)
+        except Exception as exc:
+            self._emit_debug(f"Right-hold gesture fire failed: {exc}")
+
+    def _mp_replay_right_click(self):
+        try:
+            mouse_event(MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0)
+            mouse_event(MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0)
+        except OSError as exc:
+            self._emit_debug(f"Right-click replay failed: {exc}")
+
+    _MP_RAW_CONTROLS = {
+        WM_LBUTTONDOWN: ("left", True),
+        WM_LBUTTONUP: ("left", False),
+        WM_RBUTTONDOWN: ("right", True),
+        WM_RBUTTONUP: ("right", False),
+        WM_MBUTTONDOWN: ("middle", True),
+        WM_MBUTTONUP: ("middle", False),
+    }
+
+    def _mp_emit_raw(self, w_param, point, mouse_data):
+        """Forward one physical event to the raw observer (best effort)."""
+        observer = self._mp_raw_observer
+        if observer is None:
+            return
+        payload = None
+        if w_param == WM_MOUSEMOVE:
+            payload = {
+                "control": "move",
+                "pressed": None,
+                "x": int(point.x),
+                "y": int(point.y),
+                "ts": time.time(),
+            }
+        elif w_param == WM_MOUSEWHEEL:
+            delta = hiword(mouse_data)
+            if delta:
+                payload = {
+                    "control": "wheel_up" if delta > 0 else "wheel_down",
+                    "pressed": None,
+                    "delta": abs(delta),
+                    "ts": time.time(),
+                }
+        elif w_param in (WM_XBUTTONDOWN, WM_XBUTTONUP):
+            button = hiword(mouse_data)
+            if button in (XBUTTON1, XBUTTON2):
+                payload = {
+                    "control": "xbutton1" if button == XBUTTON1 else "xbutton2",
+                    "pressed": w_param == WM_XBUTTONDOWN,
+                    "ts": time.time(),
+                }
+        else:
+            mapped = self._MP_RAW_CONTROLS.get(w_param)
+            if mapped is not None:
+                payload = {
+                    "control": mapped[0],
+                    "pressed": mapped[1],
+                    "ts": time.time(),
+                }
+        if payload is None:
+            return
+        try:
+            observer(payload)
+        except Exception as exc:
+            self._emit_debug(f"Raw observer failed: {exc}")
 
     def _log_backend_exception(self, exc, phase):
         message = self._record_backend_exception(exc, phase)
@@ -605,6 +764,10 @@ class MouseHook(BaseMouseHook):
                     return 1
                 return CallNextHookEx(self._hook, nCode, wParam, lParam)
 
+            # Physical event only (injected events returned above):
+            # feed the raw observer used by usage stats / button test UI.
+            self._mp_emit_raw(wParam, data.pt, mouse_data)
+
             edge = self._READING_BUTTON_EDGES.get(wParam)
             if wParam in (WM_XBUTTONDOWN, WM_XBUTTONUP):
                 button = hiword(mouse_data)
@@ -620,6 +783,38 @@ class MouseHook(BaseMouseHook):
 
             if edge and self._claim_reading_button(*edge, "physical"):
                 return 1
+
+            # ── MousePro right-hold gesture chord ──────────────────
+            # Reading mode claims are settled above; they take priority.
+            if wParam == WM_RBUTTONDOWN and self._mp_chord_allowed():
+                self._mp_gesture.press_right()
+                return 1
+
+            if wParam == WM_RBUTTONUP and self._mp_gesture.active:
+                decision = self._mp_gesture.release_right()
+                if decision.replay_right_click:
+                    self._mp_replay_right_click()
+                return 1
+
+            if wParam == WM_XBUTTONUP:
+                side_button = hiword(mouse_data)
+                if side_button in self._mp_pending_side_release:
+                    # Swallow the matching release edge of a screenshot chord.
+                    self._mp_pending_side_release.discard(side_button)
+                    return 1
+
+            if (
+                wParam == WM_XBUTTONDOWN
+                and self._mp_gesture.active
+                and self._mp_chord_allowed()
+            ):
+                side_button = hiword(mouse_data)
+                if side_button in self._mp_configured_side_buttons():
+                    decision = self._mp_gesture.press_side_button()
+                    if decision.action:
+                        self._mp_fire(decision.action)
+                        self._mp_pending_side_release.add(side_button)
+                        return 1
 
             if wParam == WM_XBUTTONDOWN:
                 xbutton = hiword(mouse_data)
@@ -645,6 +840,18 @@ class MouseHook(BaseMouseHook):
                 # Feature ownership is independent of the mapping snapshot/profile.
                 reader = getattr(self, "_reading_wheel_handler", None)
                 if reader is not None and reader(hiword(mouse_data)):
+                    return 1
+                if self._mp_gesture.active:
+                    # Right button is held: wheel drives the gesture chord
+                    # (up -> copy, down -> enhanced paste); skip reverse scroll.
+                    wheel_delta = hiword(mouse_data)
+                    decision = None
+                    if wheel_delta > 0:
+                        decision = self._mp_gesture.scroll_up()
+                    elif wheel_delta < 0:
+                        decision = self._mp_gesture.scroll_down()
+                    if decision is not None and decision.action:
+                        self._mp_fire(decision.action)
                     return 1
                 if self.invert_vscroll:
                     delta = hiword(mouse_data)
@@ -850,7 +1057,7 @@ class MouseHook(BaseMouseHook):
         self._ri_hwnd = CreateWindowExW(
             0,
             self._ri_class_name,
-            "PourInput RI",
+            "MousePro RI",
             0,
             0,
             0,

@@ -4,11 +4,11 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "$0")" && pwd)"
 BUILD_DIR="$ROOT_DIR/build/macos"
-ICONSET_DIR="$BUILD_DIR/PourInput.iconset"
+ICONSET_DIR="$BUILD_DIR/MousePro.iconset"
 COMMITTED_ICON="$ROOT_DIR/images/AppIcon.icns"
-GENERATED_ICON="$BUILD_DIR/PourInput.icns"
+GENERATED_ICON="$BUILD_DIR/MousePro.icns"
 SOURCE_ICON="$ROOT_DIR/images/logo_icon.png"
-ENTITLEMENTS="$ROOT_DIR/build_resources/PourInput.entitlements"
+ENTITLEMENTS="$ROOT_DIR/build_resources/MousePro.entitlements"
 TARGET_ARCH="${PYINSTALLER_TARGET_ARCH:-}"
 SIGN_IDENTITY="${POURINPUT_SIGN_IDENTITY:-}"
 export PYINSTALLER_CONFIG_DIR="$BUILD_DIR/pyinstaller"
@@ -148,12 +148,12 @@ log_python_provenance() {
 run_pyinstaller() {
   # PYTHONHASHSEED=0 pins set iteration so PyInstaller's base_library.zip
   # layout is byte-identical across rebuilds for the same toolchain inputs.
-  PYTHONHASHSEED=0 "$PYTHON" -m PyInstaller "$ROOT_DIR/PourInput-mac.spec" --noconfirm
+  PYTHONHASHSEED=0 "$PYTHON" -m PyInstaller "$ROOT_DIR/MousePro-mac.spec" --noconfirm
 }
 
 sign_ad_hoc() {
   echo "Signing mode: ad-hoc"
-  codesign --force --deep --sign - "$ROOT_DIR/dist/PourInput.app"
+  codesign --force --deep --sign - "$ROOT_DIR/dist/MousePro.app"
 }
 
 entitlements_sha256() {
@@ -161,7 +161,7 @@ entitlements_sha256() {
 }
 
 sign_nested_code() {
-  local frameworks_dir="$ROOT_DIR/dist/PourInput.app/Contents/Frameworks"
+  local frameworks_dir="$ROOT_DIR/dist/MousePro.app/Contents/Frameworks"
   [[ -d "$frameworks_dir" ]] || return 0
 
   while IFS= read -r -d '' nested; do
@@ -173,7 +173,7 @@ sign_nested_code() {
 }
 
 verify_bundle() {
-  codesign --verify --deep --strict --verbose=2 "$ROOT_DIR/dist/PourInput.app"
+  codesign --verify --deep --strict --verbose=2 "$ROOT_DIR/dist/MousePro.app"
 }
 
 sign_with_identity() {
@@ -188,7 +188,7 @@ sign_with_identity() {
   codesign --force --options runtime --timestamp=none \
     --entitlements "$ENTITLEMENTS" \
     --sign "$SIGN_IDENTITY" \
-    "$ROOT_DIR/dist/PourInput.app"
+    "$ROOT_DIR/dist/MousePro.app"
   verify_bundle
 }
 
@@ -211,4 +211,4 @@ log_python_provenance
 run_pyinstaller
 sign_app
 
-echo "Build complete: $ROOT_DIR/dist/PourInput.app"
+echo "Build complete: $ROOT_DIR/dist/MousePro.app"

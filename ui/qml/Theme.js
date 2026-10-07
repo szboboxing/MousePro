@@ -1,7 +1,7 @@
 .pragma library
 
 // Pour family tokens, translated from PourSend's shipped desktop UI.
-// PourInput keeps its own information architecture and dark appearance while
+// MousePro keeps its own information architecture and dark appearance while
 // sharing the same calm blue-gray surfaces, restrained borders, and blue focus.
 var radius = 12
 var radiusSmall = 8

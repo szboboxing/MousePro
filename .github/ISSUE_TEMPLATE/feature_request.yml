@@ -1,12 +1,12 @@
 name: Feature Request
-description: Suggest a new feature or improvement for PourInput
+description: Suggest a new feature or improvement for MousePro
 title: "[Feature] "
 labels: ["enhancement"]
 body:
   - type: markdown
     attributes:
       value: |
-        Have an idea for PourInput? We would love to hear it! Please describe what
+        Have an idea for MousePro? We would love to hear it! Please describe what
         you would like and why it would be useful.
 
   - type: textarea
@@ -16,7 +16,7 @@ body:
       description: >
         Describe the feature or improvement you would like. Be as specific as
         you can about what it should do.
-      placeholder: "I would like PourInput to..."
+      placeholder: "I would like MousePro to..."
     validations:
       required: true
 
@@ -35,7 +35,7 @@ body:
     id: area
     attributes:
       label: Area of the app
-      description: Which part of PourInput does this relate to?
+      description: Which part of MousePro does this relate to?
       options:
         - Button remapping / actions
         - Gesture button / swipe actions

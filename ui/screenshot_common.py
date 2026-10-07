@@ -64,7 +64,7 @@ def screenshots_dir(home: Path | None = None) -> Path:
         primary.mkdir(parents=True, exist_ok=True)
         return primary
     except OSError:
-        fallback = root / "Pictures" / "PourInput Screenshots"
+        fallback = root / "Pictures" / "MousePro Screenshots"
         fallback.mkdir(parents=True, exist_ok=True)
         return fallback
 

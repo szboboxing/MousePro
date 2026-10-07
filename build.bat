@@ -1,19 +1,19 @@
 @echo off
 :: ──────────────────────────────────────────────────────────────
-:: build.bat — Build a portable PourInput distribution
+:: build.bat — Build a portable MousePro distribution
 ::
-:: Produces:  dist\PourInput\PourInput.exe   (+ supporting files)
+:: Produces:  dist\MousePro\MousePro.exe   (+ supporting files)
 :: Zip that folder and distribute — no Python install required.
 ::
 :: Usage:  build.bat           — incremental (fast, reuses cache)
 ::         build.bat --clean   — full clean rebuild
 :: ──────────────────────────────────────────────────────────────
-title PourInput — Build
+title MousePro — Build
 cd /d "%~dp0"
 set "START_TIME=%TIME%"
 
 echo.
-echo ===  PourInput Portable Build  ===
+echo ===  MousePro Portable Build  ===
 echo.
 
 :: ── 1. Activate venv if present ──────────────────────────────
@@ -45,24 +45,24 @@ if %errorlevel% neq 0 (
 
 :: ── 3. Clean previous build ──────────────────────────────────
 :: Always clean dist (output); only clean build cache with --clean
-if exist "dist\PourInput" (
-    echo [*] Removing previous dist\PourInput...
-    rmdir /s /q "dist\PourInput"
+if exist "dist\MousePro" (
+    echo [*] Removing previous dist\MousePro...
+    rmdir /s /q "dist\MousePro"
 )
 if /i "%~1"=="--clean" (
-    if exist "build\PourInput" (
+    if exist "build\MousePro" (
         echo [*] Full clean: removing build cache...
-        rmdir /s /q "build\PourInput"
+        rmdir /s /q "build\MousePro"
     )
 ) else (
-    if exist "build\PourInput" (
+    if exist "build\MousePro" (
         echo [*] Incremental build — reusing analysis cache
     )
 )
 
 :: ── 4. Run PyInstaller ───────────────────────────────────────
 echo [*] Building with PyInstaller...
-pyinstaller PourInput.spec --noconfirm
+pyinstaller MousePro.spec --noconfirm
 
 if %errorlevel% neq 0 (
     echo.
@@ -77,10 +77,10 @@ if %errorlevel% neq 0 (
 set "END_TIME=%TIME%"
 echo.
 echo ===  Build complete!  ===
-echo Output: dist\PourInput\PourInput.exe
+echo Output: dist\MousePro\MousePro.exe
 echo Started:  %START_TIME%
 echo Finished: %END_TIME%
 echo.
-echo To distribute: zip the  dist\PourInput  folder.
+echo To distribute: zip the  dist\MousePro  folder.
 echo.
 pause

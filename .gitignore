@@ -42,8 +42,8 @@ Desktop.ini
 
 # Release outputs
 release/
-PourInput-Windows*/
-PourInput-Windows*.zip
+MousePro-Windows*/
+MousePro-Windows*.zip
 
 # Build artifacts
 build_icon.py

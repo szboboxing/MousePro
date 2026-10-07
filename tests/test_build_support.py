@@ -84,7 +84,7 @@ class LinuxPermissionPackagingTests(unittest.TestCase):
             root, "packaging", "linux", "install-linux-permissions.sh"
         )
         rules = os.path.join(
-            root, "packaging", "linux", "69-pourinput-logitech.rules"
+            root, "packaging", "linux", "69-mousepro-logitech.rules"
         )
 
         self.assertTrue(os.path.isfile(helper))
@@ -99,14 +99,14 @@ class LinuxPermissionPackagingTests(unittest.TestCase):
 
     def test_linux_spec_packages_linux_files_into_linux_directory(self):
         root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        spec_path = os.path.join(root, "PourInput-linux.spec")
+        spec_path = os.path.join(root, "MousePro-linux.spec")
         with open(spec_path, encoding="utf-8") as spec_file:
             spec_text = spec_file.read()
 
         linux_assets = (
-            "69-pourinput-logitech.rules",
+            "69-mousepro-logitech.rules",
             "install-linux-permissions.sh",
-            "io.github.pour_soi.pourinput.desktop.in",
+            "io.github.szboboxing.mousepro.desktop.in",
         )
         for asset_name in linux_assets:
             with self.subTest(asset=asset_name):

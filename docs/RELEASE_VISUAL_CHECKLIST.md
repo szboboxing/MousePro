@@ -12,7 +12,7 @@
 ## Brand assets
 
 - [ ] `images/logo_icon.png` is the approved 1024 × 1024 RGBA master.
-- [ ] `images/logo.png` shows the complete `PourInput` wordmark without crop or distortion.
+- [ ] `images/logo.png` shows the complete `MousePro` wordmark without crop or distortion.
 - [ ] Sidebar and About marks use aspect-preserving rendering and the full symbol canvas.
 - [ ] Functional mouse/navigation/device icons remain functional icons; they have not been replaced by the brand mark.
 - [ ] No legacy placeholder appears in application-identity surfaces.
@@ -37,7 +37,7 @@
 ## Linux identity (when shipped)
 
 - [ ] Hicolor icons exist at 16, 24, 32, 48, 64, 128, 256, and 512 px.
-- [ ] File name remains `io.github.pour_soi.pourinput.png` in each expected directory.
+- [ ] File name remains `io.github.szboboxing.mousepro.png` in each expected directory.
 - [ ] Desktop entry, launcher, taskbar, and application switcher resolve the current icon.
 
 ## Shell and layout

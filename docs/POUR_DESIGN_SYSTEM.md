@@ -1,6 +1,6 @@
 # Pour Product-Family Design System
 
-> **Authority:** This document defines the shared Pour-family foundation. For the current PourInput implementation, [`ui/qml/Theme.js`](../ui/qml/Theme.js) and the shipped QML remain the source of truth. [`POUR_COMPONENTS.md`](POUR_COMPONENTS.md) records current component details and product-specific exceptions. When guidance conflicts, current source wins for PourInput; this document governs new family work unless an explicitly documented product exception applies.
+> **Authority:** This document defines the shared Pour-family foundation. For the current MousePro implementation, [`ui/qml/Theme.js`](../ui/qml/Theme.js) and the shipped QML remain the source of truth. [`POUR_COMPONENTS.md`](POUR_COMPONENTS.md) records current component details and product-specific exceptions. When guidance conflicts, current source wins for MousePro; this document governs new family work unless an explicitly documented product exception applies.
 
 ## Contents
 
@@ -25,7 +25,7 @@
 - Screenshot production: [`SCREENSHOT_GUIDELINES.md`](SCREENSHOT_GUIDELINES.md)
 - Release gate: [`RELEASE_VISUAL_CHECKLIST.md`](RELEASE_VISUAL_CHECKLIST.md)
 
-There is no `docs/DESIGN_SYSTEM.md` in the current repository. If one is introduced later as a PourInput-specific authority, it must link here, state its narrower scope, and identify every deliberate exception instead of silently redefining family rules.
+There is no `docs/DESIGN_SYSTEM.md` in the current repository. If one is introduced later as a MousePro-specific authority, it must link here, state its narrower scope, and identify every deliberate exception instead of silently redefining family rules.
 
 ## Brand philosophy
 
@@ -43,7 +43,7 @@ Product-family principles:
 
 ## Family and product relationship
 
-PourInput and PourSend are companion shipped products in the Pour family. This repository establishes PourInput's implementation and records only one direct PourSend relationship: the current tokens were translated from PourSend's shipped desktop UI. This documentation does not infer PourSend behavior or undocumented tokens.
+MousePro and PourSend are companion shipped products in the Pour family. This repository establishes MousePro's implementation and records only one direct PourSend relationship: the current tokens were translated from PourSend's shipped desktop UI. This documentation does not infer PourSend behavior or undocumented tokens.
 
 ### Shared decisions
 
@@ -57,8 +57,8 @@ PourInput and PourSend are companion shipped products in the Pour family. This r
 
 ### Product-specific decisions
 
-- PourInput's mouse diagram, profile sidebar, device status, DPI controls, and functional mouse icons;
-- PourInput's current blue accent values;
+- MousePro's mouse diagram, profile sidebar, device status, DPI controls, and functional mouse icons;
+- MousePro's current blue accent values;
 - platform-specific input, tray, and device workflows;
 - any layout required by a product's own information architecture.
 
@@ -120,13 +120,13 @@ All implemented color tokens below come from [`ui/qml/Theme.js`](../ui/qml/Theme
 
 ### Product accent strategy
 
-The blue pairs above are the **implemented PourInput standard**, including the Material accent set in [`main_qml.py`](../main_qml.py). They are not automatically the accent of every Pour product. A future product accent must be documented as product-specific and must not replace semantic danger, success, or warning colors.
+The blue pairs above are the **implemented MousePro standard**, including the Material accent set in [`main_qml.py`](../main_qml.py). They are not automatically the accent of every Pour product. A future product accent must be documented as product-specific and must not replace semantic danger, success, or warning colors.
 
 The neutral palette is the family anchor. New products should first reuse or deliberately adapt the neutral roles, then add one restrained product accent. Avoid large accent-colored surfaces and avoid using the accent as a substitute for hierarchy.
 
 ## Typography
 
-PourInput uses the current Qt application font. [`main_qml.py`](../main_qml.py) falls back to `.AppleSystemUIFont` on macOS, `Segoe UI` on Windows, and `Noto Sans` on Linux when Qt returns no useful family. Monospace metadata uses Menlo, Consolas, or generic `monospace` according to platform.
+MousePro uses the current Qt application font. [`main_qml.py`](../main_qml.py) falls back to `.AppleSystemUIFont` on macOS, `Segoe UI` on Windows, and `Noto Sans` on Linux when Qt returns no useful family. Monospace metadata uses Menlo, Consolas, or generic `monospace` according to platform.
 
 The following is the **implemented hierarchy**, not a perfectly normalized type scale:
 
@@ -213,7 +213,7 @@ Functional icons are served through [`AppIcon.qml`](../ui/qml/AppIcon.qml) and `
 
 The current icon folder contains mostly filled 256-unit SVG paths, while `info.svg` is a 24-unit stroked icon. This is a known inconsistency. Future additions should match the dominant filled family or deliberately normalize an entire set; do not mix construction styles casually.
 
-Functional mouse icons describe navigation, device type, or controls. They are not legacy brand marks and must not be replaced by the PourInput logo. See [`BRAND_ASSET_GUIDELINES.md`](BRAND_ASSET_GUIDELINES.md).
+Functional mouse icons describe navigation, device type, or controls. They are not legacy brand marks and must not be replaced by the MousePro logo. See [`BRAND_ASSET_GUIDELINES.md`](BRAND_ASSET_GUIDELINES.md).
 
 ### Motion
 
@@ -270,7 +270,7 @@ Desktop-first interaction means:
 
 1. Start with the family neutral roles, spacing tokens, radius hierarchy, system typography, and state model.
 2. Define product-specific accent and workflow exceptions in writing; do not silently fork shared tokens.
-3. Keep the product's own information architecture. Do not copy PourInput or PourSend page layouts verbatim.
+3. Keep the product's own information architecture. Do not copy MousePro or PourSend page layouts verbatim.
 4. Use the standard shell grid as a reference, then document any deliberate window, rail, or content-inset difference.
 5. Add a reusable component only when the same anatomy and behavior recur; accurately document inline styling until then.
 6. Provide light, dark, localized, high-DPI, keyboard, empty, error, and minimum-window evidence before release.

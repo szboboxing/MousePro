@@ -1,4 +1,4 @@
-"""Native Windows screenshot actions for PourInput.
+"""Native Windows screenshot actions for MousePro.
 
 The mouse hook can invoke actions from a non-Qt thread.  This module exposes a
 Qt controller whose public request method only emits a queued signal; all

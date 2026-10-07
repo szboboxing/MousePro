@@ -1,4 +1,4 @@
-"""Canonical PourInput version and build metadata."""
+"""Canonical MousePro version and build metadata."""
 
 from __future__ import annotations
 
@@ -9,12 +9,13 @@ import subprocess
 import sys
 
 
-APP_NAME = "PourInput"
-APP_EXECUTABLE_NAME = "PourInput.exe"
-MAINTAINER = "pour-soi"
+APP_NAME = "MousePro"
+APP_NAME_ZH = "鼠标Pro"
+APP_EXECUTABLE_NAME = "MousePro.exe"
+MAINTAINER = "szboboxing"
 
-_DEFAULT_APP_VERSION = "1.4.3"
-_BUILD_INFO_FILENAME = "POURINPUT_build_info.json"
+_DEFAULT_APP_VERSION = "1.0.0"
+_BUILD_INFO_FILENAME = "MOUSEPRO_build_info.json"
 _REPO_ROOT = Path(__file__).resolve().parent.parent
 
 
@@ -106,20 +107,20 @@ _BUNDLED_BUILD_INFO = _load_bundled_build_info()
 APP_VERSION = _normalize_version(
     str(
         _BUNDLED_BUILD_INFO.get("version")
-        or os.environ.get("POURINPUT_VERSION", _DEFAULT_APP_VERSION)
+        or os.environ.get("MOUSEPRO_VERSION", _DEFAULT_APP_VERSION)
     )
 )
 
 _APP_COMMIT_FULL = str(
     _BUNDLED_BUILD_INFO.get("commit")
-    or os.environ.get("POURINPUT_GIT_COMMIT", "")
+    or os.environ.get("MOUSEPRO_GIT_COMMIT", "")
     or _run_git(["rev-parse", "HEAD"])
     or _read_git_head()
 ).strip()
 APP_COMMIT = _APP_COMMIT_FULL
 APP_COMMIT_SHORT = _APP_COMMIT_FULL[:12] if _APP_COMMIT_FULL else ""
 
-_DIRTY_OVERRIDE = _parse_bool(os.environ.get("POURINPUT_GIT_DIRTY"))
+_DIRTY_OVERRIDE = _parse_bool(os.environ.get("MOUSEPRO_GIT_DIRTY"))
 if "dirty" in _BUNDLED_BUILD_INFO:
     APP_COMMIT_DIRTY = bool(_BUNDLED_BUILD_INFO.get("dirty"))
 elif _DIRTY_OVERRIDE is not None:

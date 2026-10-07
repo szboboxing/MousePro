@@ -1,4 +1,4 @@
-# PourInput Settings Architecture
+# MousePro Settings Architecture
 
 Settings are stored with profiles in one versioned JSON document. This document covers settings ownership and persistence; runtime synchronization details are in [STATE_MANAGEMENT.md](STATE_MANAGEMENT.md).
 

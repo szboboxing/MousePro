@@ -43,7 +43,7 @@ class ConfigMigrationTests(unittest.TestCase):
 
         migrated = config._migrate(legacy)
 
-        self.assertEqual(migrated["version"], 11)
+        self.assertEqual(migrated["version"], 12)
         self.assertEqual(migrated["profiles"]["default"]["apps"], [])
         self.assertFalse(migrated["settings"]["invert_hscroll"])
         self.assertFalse(migrated["settings"]["invert_vscroll"])
@@ -60,7 +60,7 @@ class ConfigMigrationTests(unittest.TestCase):
         self.assertTrue(migrated["settings"]["check_for_updates"])
         self.assertEqual(migrated["settings"]["update_check_state"], {})
         self.assertFalse(migrated["settings"]["start_at_login"])
-        self.assertEqual(migrated["settings"]["language"], "en")
+        self.assertEqual(migrated["settings"]["language"], "zh_CN")
         self.assertNotIn("start_with_windows", migrated["settings"])
         self.assertEqual(
             migrated["profiles"]["default"]["mappings"]["gesture"], "none"
@@ -115,7 +115,7 @@ class ConfigMigrationTests(unittest.TestCase):
 
         migrated = config._migrate(cfg)
 
-        self.assertEqual(migrated["version"], 11)
+        self.assertEqual(migrated["version"], 12)
         self.assertEqual(
             migrated["profiles"]["media"]["apps"],
             ["Microsoft.Media.Player.exe", "VLC.exe"],
@@ -159,7 +159,7 @@ class ConfigMigrationTests(unittest.TestCase):
             ):
                 loaded = config.load_config()
 
-        self.assertEqual(loaded["version"], 11)
+        self.assertEqual(loaded["version"], 12)
         self.assertEqual(loaded["settings"]["dpi"], 800)
         self.assertFalse(loaded["settings"]["start_at_login"])
         self.assertEqual(loaded["settings"]["gesture_threshold"], 50)
@@ -171,7 +171,7 @@ class ConfigMigrationTests(unittest.TestCase):
         self.assertTrue(loaded["settings"]["check_for_updates"])
         self.assertEqual(loaded["settings"]["update_check_state"], {})
         self.assertFalse(loaded["settings"]["generic_mouse_enabled"])
-        self.assertEqual(loaded["settings"]["language"], "en")
+        self.assertEqual(loaded["settings"]["language"], "zh_CN")
         self.assertEqual(loaded["profiles"]["default"]["mappings"]["middle"], "copy")
         self.assertEqual(
             loaded["profiles"]["default"]["mappings"]["xbutton1"], "alt_tab"
@@ -333,7 +333,7 @@ class ConfigMigrationTests(unittest.TestCase):
 
         migrated = config._migrate(legacy)
 
-        self.assertEqual(migrated["version"], 11)
+        self.assertEqual(migrated["version"], 12)
         self.assertTrue(migrated["settings"]["start_at_login"])
         self.assertEqual(
             migrated["profiles"]["default"]["mappings"]["mode_shift"],

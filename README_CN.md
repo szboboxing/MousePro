@@ -1,20 +1,20 @@
 <p align="center">
-  <img src="images/logo.png" alt="PourInput" width="140">
+  <img src="images/logo.png" alt="鼠标Pro" width="140">
 </p>
 
-# PourInput
+# 鼠标Pro
 
 ### 你的鼠标，由你掌控。
 
 [English](README.md) · **简体中文**
 
-**PourInput 是一款鼠标自定义软件。** 把复制、粘贴、切换标签页、截图、自定义快捷键等常用操作放到鼠标上。为支持的按键分别设置单击和长按动作，再按应用创建配置，让鼠标随着你正在使用的软件切换操作。
+**鼠标Pro 是一款鼠标自定义软件。** 把复制、粘贴、切换标签页、截图、自定义快捷键等常用操作放到鼠标上。为支持的按键分别设置单击和长按动作，再按应用创建配置，让鼠标随着你正在使用的软件切换操作。
 
-[**下载 Windows 正式版 · v1.4.3**](https://github.com/pour-soi/PourInput/releases/download/v1.4.3/PourInput-v1.4.3-Windows.zip) · [更新说明](https://github.com/pour-soi/PourInput/releases/tag/v1.4.3) · [完整功能图集](docs/FEATURES_CN.md)
+[**下载 Windows 正式版 · v1.0.0**](https://github.com/szboboxing/MousePro/releases/download/v1.0.0/MousePro-v1.0.0-Windows.zip) · [更新说明](https://github.com/szboboxing/MousePro/releases/tag/v1.0.0) · [完整功能图集](docs/FEATURES_CN.md)
 
-![PourInput v1.4.3 鼠标按钮与应用配置](images/screenshots-v1.4.3/mouse-zh-CN.png)
+![鼠标Pro v1.0.0 鼠标按钮与应用配置](images/screenshots-v1.4.3/mouse-zh-CN.png)
 
-*截图使用 v1.4.3 实际界面渲染，搭配示例配置与设备能力数据。截图用于说明界面；具体硬件功能取决于鼠标型号和固件。*
+*截图使用 v1.0.0 实际界面渲染，搭配示例配置与设备能力数据。截图用于说明界面；具体硬件功能取决于鼠标型号和固件。*
 
 ## 把常用操作放到鼠标上
 
@@ -28,7 +28,7 @@
 
 ## 不同软件，使用不同配置
 
-保留一套默认配置，再为浏览器、编辑器等软件添加应用配置。PourInput 会根据当前获得焦点的应用切换映射。同一个侧键，在浏览器里可以后退，在其他软件里也可以执行另一组快捷键。
+保留一套默认配置，再为浏览器、编辑器等软件添加应用配置。鼠标Pro 会根据当前获得焦点的应用切换映射。同一个侧键，在浏览器里可以后退，在其他软件里也可以执行另一组快捷键。
 
 ![应用配置选择](images/screenshots-v1.4.3/profiles-zh-CN.png)
 
@@ -50,7 +50,7 @@
 
 ## 阅读模式：让鼠标适应具体场景
 
-鼠标自定义始终是 PourInput 的核心。阅读模式沿着这个方向迈出了一步：除了决定“按键执行什么”，也让鼠标适应“此刻正在做什么”。它展示了鼠标控制如何融入一段完整的使用过程，同时保留原有的日常映射。
+鼠标自定义始终是 鼠标Pro 的核心。阅读模式沿着这个方向迈出了一步：除了决定“按键执行什么”，也让鼠标适应“此刻正在做什么”。它展示了鼠标控制如何融入一段完整的使用过程，同时保留原有的日常映射。
 
 ### 把本地书籍放进阅读浮窗
 
@@ -76,15 +76,15 @@
 
 ## 在 Windows 上开始使用
 
-[**下载 PourInput v1.4.3 Windows 正式版**](https://github.com/pour-soi/PourInput/releases/download/v1.4.3/PourInput-v1.4.3-Windows.zip)
+[**下载 鼠标Pro v1.0.0 Windows 正式版**](https://github.com/szboboxing/MousePro/releases/download/v1.0.0/MousePro-v1.0.0-Windows.zip)
 
 1. 将 ZIP **完整解压**到较短的路径，例如 `F:\Apps`。不要直接在压缩包内运行，也不要在解压报错时跳过文件。
-2. 从**系统托盘菜单**退出旧版 PourInput。只关闭设置窗口，并不代表软件已经退出。
-3. 打开 `PourInput/PourInput.exe`，无需另外安装 Python。
+2. 从**系统托盘菜单**退出旧版 鼠标Pro。只关闭设置窗口，并不代表软件已经退出。
+3. 打开 `MousePro/MousePro.exe`，无需另外安装 Python。
 4. 要设置按键，进入鼠标页面，点击对应按钮。
 5. 按需添加应用配置；要自定义标准中键和侧键时，开启通用鼠标模式。
 
-Windows 程序尚未签名。[发布页](https://github.com/pour-soi/PourInput/releases/tag/v1.4.3)同时提供 SHA-256 校验文件和更新清单。
+Windows 程序尚未签名。[发布页](https://github.com/szboboxing/MousePro/releases/tag/v1.0.0)同时提供 SHA-256 校验文件和更新清单。
 
 ## 设备与平台说明
 
@@ -92,15 +92,15 @@ Windows 程序尚未签名。[发布页](https://github.com/pour-soi/PourInput/r
 
 通用鼠标模式目前支持中键和两个侧键，暂不能按物理来源区分多只普通鼠标，也不提供通用的左／右键或竖向滚轮重映射。阅读模式对滚轮的接管是独立功能。
 
-其他罗技型号在提供所需 HID++ 控件时可能兼容。如果软件检测到了鼠标，却没有显示某个控件，可以在鼠标页面导出设备信息，并附在[设备支持反馈](https://github.com/pour-soi/PourInput/issues)中。
+其他罗技型号在提供所需 HID++ 控件时可能兼容。如果软件检测到了鼠标，却没有显示某个控件，可以在鼠标页面导出设备信息，并附在[设备支持反馈](https://github.com/szboboxing/MousePro/issues)中。
 
 ### macOS 版本
 
-macOS 单独提供 **v1.3.4-macos.1**。上面介绍的 Windows 阅读和自动滚动功能，不包含在这个 macOS 版本中。
+macOS 版本随 **v1.0.0** 一同发布。上面介绍的 Windows 阅读和自动滚动功能，不包含在这个 macOS 版本中。
 
-[Apple Silicon 下载](https://github.com/pour-soi/PourInput/releases/download/v1.3.4-macos.1/PourInput-1.3.4-macOS-arm64.zip) · [Intel 下载](https://github.com/pour-soi/PourInput/releases/download/v1.3.4-macos.1/PourInput-1.3.4-macOS-x86_64.zip) · [macOS 版本说明](https://github.com/pour-soi/PourInput/releases/tag/v1.3.4-macos.1)
+[Apple Silicon 下载](https://github.com/szboboxing/MousePro/releases/download/v1.0.0/MousePro-macOS.zip) · [Intel 下载](https://github.com/szboboxing/MousePro/releases/download/v1.0.0/MousePro-macOS-intel.zip) · [macOS 版本说明](https://github.com/szboboxing/MousePro/releases/tag/v1.0.0)
 
-解压对应版本，打开 `PourInput.app`，按提示授予辅助功能权限。此版本尚未签名和公证。Intel 版曾使用 MacBook Air 和 MX Master 3 实测；Apple Silicon 目前仅通过构建验证。通用鼠标模式仅支持 Windows，Linux 仍处于验证阶段。
+解压对应版本，打开 `MousePro.app`，按提示授予辅助功能权限。此版本尚未签名和公证。Intel 版曾使用 MacBook Air 和 MX Master 3 实测；Apple Silicon 目前仅通过构建验证。通用鼠标模式仅支持 Windows，Linux 仍处于验证阶段。
 
 ## 常见问题
 
@@ -108,7 +108,7 @@ macOS 单独提供 **v1.3.4-macos.1**。上面介绍的 Windows 阅读和自动�
 
 **解压提示“路径太长”？** 取消解压，换一个更短的目标路径重新完整解压，不要跳过失败的文件。
 
-**打开软件好像没有反应？** 先看看系统托盘中是否已有 PourInput 运行。打开另一个版本前，先退出旧进程。
+**打开软件好像没有反应？** 先看看系统托盘中是否已有 鼠标Pro 运行。打开另一个版本前，先退出旧进程。
 
 ## 开发与参与贡献
 
@@ -121,6 +121,6 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m unittest discover -s tests
 ```
 
-由 **pour-soi** 维护。早期开发使用了 [Mouser](https://github.com/TomBadash/Mouser) 的部分工作；PourInput 现已独立维护，运行时不需要 Mouser。
+由 **szboboxing** 维护。鼠标Pro Fork 自 [pour-soi/PourInput](https://github.com/pour-soi/PourInput)（MIT 许可证）；上游早期开发使用了 [Mouser](https://github.com/TomBadash/Mouser) 的部分工作。鼠标Pro 现独立维护，运行时不需要 Mouser。
 
-[MIT 许可证](LICENSE) · [更新记录](CHANGELOG.md) · [问题反馈](https://github.com/pour-soi/PourInput/issues)
+[MIT 许可证](LICENSE) · [更新记录](CHANGELOG.md) · [问题反馈](https://github.com/szboboxing/MousePro/issues)

@@ -1,8 +1,8 @@
-# PourInput Linux device access for Logitech HID++ mice.
+# MousePro Linux device access for Logitech HID++ mice.
 #
 # HID++ features use hidraw. Button remapping uses evdev input events and
 # uinput. uaccess grants the active local desktop session access through
-# logind without making PourInput run as root.
+# logind without making MousePro run as root.
 
 # Logitech HID++ over USB receivers and Bluetooth.
 KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="046d", TAG+="uaccess"

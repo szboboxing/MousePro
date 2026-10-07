@@ -408,21 +408,21 @@ class PortalScreenshotBackendTests(unittest.TestCase):
         self.assertIsNone(backend)
 
     def test_portal_request_options_use_interactive_target_and_token(self):
-        options = portal_options_for_action(SCREENSHOT_REGION_CLIP, "POURINPUT_token")
+        options = portal_options_for_action(SCREENSHOT_REGION_CLIP, "MOUSEPRO_token")
 
-        self.assertEqual(options["handle_token"], "POURINPUT_token")
+        self.assertEqual(options["handle_token"], "MOUSEPRO_token")
         self.assertIs(options["interactive"], True)
         self.assertIs(options["modal"], True)
         self.assertEqual(options["target"], PORTAL_TARGET_AREA)
         self.assertEqual(
-            portal_options_for_action(SCREENSHOT_FULL_FILE, "POURINPUT_token")["target"],
+            portal_options_for_action(SCREENSHOT_FULL_FILE, "MOUSEPRO_token")["target"],
             PORTAL_TARGET_SCREEN,
         )
 
     def test_portal_request_path_uses_base_service_and_token(self):
         self.assertEqual(
-            portal_request_path(":1.234", "POURINPUT_token"),
-            "/org/freedesktop/portal/desktop/request/1_234/POURINPUT_token",
+            portal_request_path(":1.234", "MOUSEPRO_token"),
+            "/org/freedesktop/portal/desktop/request/1_234/MOUSEPRO_token",
         )
 
     def test_successful_portal_full_capture_loads_image(self):
@@ -464,7 +464,7 @@ class PortalScreenshotBackendTests(unittest.TestCase):
     def test_portal_timeout_error_mentions_desktop_portal(self):
         message = (
             "Screenshot failed: desktop portal did not respond. "
-            "Open the PourInput window once and retry."
+            "Open the MousePro window once and retry."
         )
         backend = PortalScreenshotBackend(
             client_factory=lambda: FakePortalClient(error=ScreenshotError(message))
@@ -527,9 +527,9 @@ class LinuxScreenshotControllerTests(unittest.TestCase):
 
         self.assertEqual(statuses, ["Finish the current screenshot first"])
 
-    def test_file_delivery_is_POURINPUT_owned(self):
+    def test_file_delivery_is_MOUSEPRO_owned(self):
         statuses = []
-        target = Path("/tmp/pourinput-owned.png")
+        target = Path("/tmp/mousepro-owned.png")
         controller = LinuxScreenshotController(
             backend=None,
             status_callback=statuses.append,
@@ -543,7 +543,7 @@ class LinuxScreenshotControllerTests(unittest.TestCase):
         save_image.assert_called_once_with(image, target)
         self.assertEqual(statuses, [f"Screenshot saved to {target}"])
 
-    def test_clipboard_delivery_is_POURINPUT_owned(self):
+    def test_clipboard_delivery_is_MOUSEPRO_owned(self):
         statuses = []
         controller = LinuxScreenshotController(backend=None, status_callback=statuses.append)
         image = Image.new("RGBA", (2, 2))
@@ -554,7 +554,7 @@ class LinuxScreenshotControllerTests(unittest.TestCase):
         copy_image.assert_called_once_with(image)
         self.assertEqual(statuses, ["Screenshot copied to clipboard"])
 
-    def test_kwin_region_backend_uses_POURINPUT_overlay(self):
+    def test_kwin_region_backend_uses_MOUSEPRO_overlay(self):
         client = FakeKWinClient()
         backend = KWinScreenshotBackend(
             client_factory=lambda: client,
@@ -580,7 +580,7 @@ class LinuxScreenshotControllerTests(unittest.TestCase):
         )
 
         class GoodBackend:
-            needs_POURINPUT_region_selection = False
+            needs_MOUSEPRO_region_selection = False
 
             def probe(self):
                 pass

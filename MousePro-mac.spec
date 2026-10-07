@@ -6,7 +6,7 @@ Run on macOS with a Python interpreter that matches the target architecture,
 or set `PYINSTALLER_TARGET_ARCH` via `build_macos_app.sh` to request an
 explicit `arm64`, `x86_64`, or `universal2` build when your Python
 environment supports it:
-    python3 -m PyInstaller PourInput-mac.spec --noconfirm
+    python3 -m PyInstaller MousePro-mac.spec --noconfirm
 """
 
 import os
@@ -15,8 +15,8 @@ import subprocess
 
 ROOT = os.path.abspath(".")
 COMMITTED_ICON = os.path.join(ROOT, "images", "AppIcon.icns")
-GENERATED_ICON = os.path.join(ROOT, "build", "macos", "PourInput.icns")
-BUILD_INFO_PATH = os.path.join(ROOT, "build", "POURINPUT_build_info.json")
+GENERATED_ICON = os.path.join(ROOT, "build", "macos", "MousePro.icns")
+BUILD_INFO_PATH = os.path.join(ROOT, "build", "MOUSEPRO_build_info.json")
 TARGET_ARCH = os.environ.get("PYINSTALLER_TARGET_ARCH", "").strip() or None
 if TARGET_ARCH not in (None, "arm64", "x86_64", "universal2"):
     raise SystemExit(
@@ -28,7 +28,7 @@ elif os.path.exists(GENERATED_ICON):
     ICON_PATH = GENERATED_ICON
 else:
     ICON_PATH = None
-BUNDLE_ID = "io.github.pour_soi.pourinput"
+BUNDLE_ID = "io.github.szboboxing.mousepro"
 
 
 def _load_app_version() -> str:
@@ -69,8 +69,8 @@ def _git_dirty():
 
 
 def _write_build_info(version: str) -> str:
-    commit = os.environ.get("POURINPUT_GIT_COMMIT", "").strip() or _run_git(["rev-parse", "HEAD"])
-    dirty_env = os.environ.get("POURINPUT_GIT_DIRTY")
+    commit = os.environ.get("MOUSEPRO_GIT_COMMIT", "").strip() or _run_git(["rev-parse", "HEAD"])
+    dirty_env = os.environ.get("MOUSEPRO_GIT_DIRTY")
     if dirty_env:
         dirty = dirty_env.strip().lower() in {"1", "true", "yes", "on"}
     else:
@@ -279,7 +279,7 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name="PourInput",
+    name="MousePro",
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -297,17 +297,17 @@ coll = COLLECT(
     strip=False,
     upx=False,
     upx_exclude=[],
-    name="PourInput",
+    name="MousePro",
 )
 
 app = BUNDLE(
     coll,
-    name="PourInput.app",
+    name="MousePro.app",
     icon=ICON_PATH,
     bundle_identifier=BUNDLE_ID,
     info_plist={
-        "CFBundleDisplayName": "PourInput",
-        "CFBundleName": "PourInput",
+        "CFBundleDisplayName": "MousePro",
+        "CFBundleName": "MousePro",
         "CFBundleShortVersionString": APP_VERSION,
         "CFBundleVersion": APP_VERSION,
         "LSMinimumSystemVersion": "12.0",

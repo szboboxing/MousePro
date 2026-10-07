@@ -9,10 +9,10 @@ from core import log_setup
 
 
 class GetLogDirTests(unittest.TestCase):
-    def test_darwin_returns_library_logs_PourInput(self):
+    def test_darwin_returns_library_logs_MousePro(self):
         with patch.object(sys, "platform", "darwin"):
             result = log_setup._get_log_dir()
-        self.assertTrue(result.endswith(os.path.join("Library", "Logs", "PourInput")))
+        self.assertTrue(result.endswith(os.path.join("Library", "Logs", "MousePro")))
 
     def test_linux_uses_xdg_state_home(self):
         with (
@@ -20,7 +20,7 @@ class GetLogDirTests(unittest.TestCase):
             patch.dict(os.environ, {"XDG_STATE_HOME": "/custom/state"}, clear=False),
         ):
             result = log_setup._get_log_dir()
-        self.assertEqual(result, os.path.join("/custom/state", "PourInput", "logs"))
+        self.assertEqual(result, os.path.join("/custom/state", "MousePro", "logs"))
 
     def test_linux_defaults_to_dot_local_state(self):
         env = {k: v for k, v in os.environ.items() if k != "XDG_STATE_HOME"}
@@ -30,7 +30,7 @@ class GetLogDirTests(unittest.TestCase):
         ):
             result = log_setup._get_log_dir()
         expected = os.path.join(
-            os.path.expanduser("~"), ".local", "state", "PourInput", "logs"
+            os.path.expanduser("~"), ".local", "state", "MousePro", "logs"
         )
         self.assertEqual(result, expected)
 
@@ -41,7 +41,7 @@ class GetLogDirTests(unittest.TestCase):
             patch.dict(os.environ, {"APPDATA": fake_appdata}, clear=False),
         ):
             result = log_setup._get_log_dir()
-        self.assertEqual(result, os.path.join(fake_appdata, "PourInput", "logs"))
+        self.assertEqual(result, os.path.join(fake_appdata, "MousePro", "logs"))
 
 
 class SetupLoggingTests(unittest.TestCase):
@@ -68,7 +68,7 @@ class SetupLoggingTests(unittest.TestCase):
         with patch.object(log_setup, "_get_log_dir", return_value=self.tmp):
             path = log_setup.setup_logging()
         self.assertTrue(os.path.exists(path))
-        self.assertEqual(path, os.path.join(self.tmp, "PourInput.log"))
+        self.assertEqual(path, os.path.join(self.tmp, "MousePro.log"))
 
     def test_returns_empty_string_when_already_configured(self):
         with patch.object(log_setup, "_get_log_dir", return_value=self.tmp):
@@ -93,7 +93,7 @@ class SetupLoggingTests(unittest.TestCase):
         print("[Test] hello from print")
         for h in logging.root.handlers:
             h.flush()
-        log_path = os.path.join(self.tmp, "PourInput.log")
+        log_path = os.path.join(self.tmp, "MousePro.log")
         with open(log_path, encoding="utf-8") as f:
             content = f.read()
         self.assertIn("[Test] hello from print", content)
@@ -104,7 +104,7 @@ class SetupLoggingTests(unittest.TestCase):
         print("[Test] timestamped line")
         for h in logging.root.handlers:
             h.flush()
-        log_path = os.path.join(self.tmp, "PourInput.log")
+        log_path = os.path.join(self.tmp, "MousePro.log")
         with open(log_path, encoding="utf-8") as f:
             content = f.read()
         # Timestamp format: "YYYY-MM-DD HH:MM:SS"

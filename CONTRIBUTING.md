@@ -1,6 +1,6 @@
-# Contributing to PourInput
+# Contributing to MousePro
 
-Thanks for helping improve PourInput. PourInput is an independently designed and maintained input-customization application, with Multi-Action support for compatible mouse buttons.
+Thanks for helping improve MousePro. MousePro is an independently designed and maintained input-customization application, with Multi-Action support for compatible mouse buttons.
 
 ## What Makes a Good Contribution?
 
@@ -70,7 +70,7 @@ For new Logitech mice, start with [CONTRIBUTING_DEVICES.md](CONTRIBUTING_DEVICES
 
 ## Behavior Compatibility
 
-PourInput remaps physical input. Small changes can have large user-visible effects, so compatibility matters:
+MousePro remaps physical input. Small changes can have large user-visible effects, so compatibility matters:
 
 - Do not break Gesture behavior.
 - Do not break Horizontal Scroll.
@@ -87,7 +87,7 @@ Follow the style already used in the touched files. Keep comments short and usef
 This project uses Semantic Versioning. Release artifacts are versioned as:
 
 ```text
-PourInput-vX.Y.Z-Windows.zip
+MousePro-vX.Y.Z-Windows.zip
 ```
 
 Do not overwrite previous release artifacts.

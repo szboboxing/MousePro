@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-RULE_NAME="69-pourinput-logitech.rules"
+RULE_NAME="69-mousepro-logitech.rules"
 SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 SCRIPT_PATH="$SCRIPT_DIR/$(basename -- "$0")"
 RULE_SOURCE="$SCRIPT_DIR/$RULE_NAME"
@@ -39,5 +39,5 @@ else
 fi
 
 echo "Installed $RULE_TARGET"
-echo "Reconnect your Logitech mouse, fully quit PourInput, then launch PourInput again."
+echo "Reconnect your Logitech mouse, fully quit MousePro, then launch MousePro again."
 echo "If desktop launch still cannot access the mouse, log out and back in once."

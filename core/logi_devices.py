@@ -1,5 +1,5 @@
 """
-Known Logitech device metadata used to scale PourInput beyond a single mouse model.
+Known Logitech device metadata used to scale MousePro beyond a single mouse model.
 
 This module intentionally keeps the catalog lightweight: enough structure to
 identify common HID++ mice, surface the right model name in the UI, and hang
@@ -414,7 +414,7 @@ def _spec_with_family_button_defaults(spec: dict) -> dict:
     return normalized
 
 
-# Seeded from PourInput's own device catalog first, then extended with broader
+# Seeded from MousePro's own device catalog first, then extended with broader
 # family support for devices that still use a shared layout.
 KNOWN_LOGI_DEVICES = tuple(
     LogiDeviceSpec(**_spec_with_family_button_defaults(spec))

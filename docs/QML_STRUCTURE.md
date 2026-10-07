@@ -1,4 +1,4 @@
-# PourInput QML Structure
+# MousePro QML Structure
 
 This document describes the current `ui/qml` implementation and ownership boundaries. Visual rules are defined in [POUR_DESIGN_SYSTEM.md](POUR_DESIGN_SYSTEM.md) and reusable-component guidance in [POUR_COMPONENTS.md](POUR_COMPONENTS.md).
 

@@ -237,7 +237,7 @@ class MouseHook(BaseMouseHook):
             try:
                 self._uinput = _UInput(
                     events=self._filtered_uinput_events(dev),
-                    name="PourInput Virtual Mouse",
+                    name="MousePro Virtual Mouse",
                     vendor=getattr(dev.info, "vendor", 1),
                     product=getattr(dev.info, "product", 1),
                     version=getattr(dev.info, "version", 1),
@@ -716,7 +716,7 @@ class MouseHook(BaseMouseHook):
             caps.pop(rel_type, None)
         print(
             "[MouseHook] Filtering REL_WHEEL_HI_RES / "
-            "REL_HWHEEL_HI_RES from PourInput Virtual Mouse"
+            "REL_HWHEEL_HI_RES from MousePro Virtual Mouse"
         )
         return caps
 

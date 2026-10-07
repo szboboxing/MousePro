@@ -1,7 +1,7 @@
 blank_issues_enabled: true
 contact_links:
   - name: Contributing a new device
-    url: https://github.com/pour-soi/PourInput/blob/main/CONTRIBUTING_DEVICES.md
+    url: https://github.com/szboboxing/MousePro/blob/main/CONTRIBUTING_DEVICES.md
     about: >
-      Step-by-step guide for adding your Logitech mouse to PourInput, including
+      Step-by-step guide for adding your Logitech mouse to MousePro, including
       how to get and submit a device info dump.

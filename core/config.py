@@ -14,14 +14,14 @@ from urllib.parse import quote
 from core import app_catalog
 
 if sys.platform == "darwin":
-    CONFIG_DIR = os.path.join(os.path.expanduser("~"), "Library", "Application Support", "PourInput")
+    CONFIG_DIR = os.path.join(os.path.expanduser("~"), "Library", "Application Support", "MousePro")
 elif sys.platform == "linux":
     CONFIG_DIR = os.path.join(
         os.environ.get("XDG_CONFIG_HOME", os.path.join(os.path.expanduser("~"), ".config")),
-        "PourInput",
+        "MousePro",
     )
 else:
-    CONFIG_DIR = os.path.join(os.environ.get("APPDATA", os.path.expanduser("~")), "PourInput")
+    CONFIG_DIR = os.path.join(os.environ.get("APPDATA", os.path.expanduser("~")), "MousePro")
 CONFIG_FILE = os.path.join(CONFIG_DIR, "config.json")
 _CONFIG_IO_LOCK = threading.RLock()
 _READ_ONLY_FALLBACK_CONFIGS = {}
@@ -59,7 +59,7 @@ def config_is_verified(cfg):
         return not _config_write_is_blocked(cfg)
 
 # Which mouse events map to which friendly button names
-# Stable PourInput display order (top controls, then side controls).
+# Stable MousePro display order (top controls, then side controls).
 BUTTON_NAMES = {
     "middle":        "Middle Button",
     "gesture":       "Gesture button",
@@ -154,8 +154,15 @@ def resolve_windows_xbutton_mapping_key(
     return None
 
 DEFAULT_CONFIG = {
-    "version": 11,
+    "version": 12,
     "active_profile": "default",
+    "mousepro": {
+        # Right-button-hold gesture chord (wheel = copy / enhanced paste,
+        # side button while held = system screenshot).
+        "right_hold_gesture_enabled": True,
+        # Subset of {"xbutton1", "xbutton2"}; empty/invalid falls back to both.
+        "screenshot_side_buttons": ["xbutton1", "xbutton2"],
+    },
     "profiles": {
         "default": {
             "label": "Default (All Apps)",
@@ -202,7 +209,7 @@ DEFAULT_CONFIG = {
         "appearance_mode": "system",
         "debug_mode": False,
         "device_layout_overrides": {},
-        "language": "en",
+        "language": "zh_CN",
         "ignore_trackpad": True,
         "screenshot_directory": "",
         "check_for_updates": True,
@@ -280,6 +287,7 @@ def _load_config_unlocked(*, strict=False):
             cfg = _merge_defaults(cfg, DEFAULT_CONFIG)
             _validate_mapping_value_types(cfg)
             cfg = _validate_types(cfg, DEFAULT_CONFIG)
+            cfg = sanitize_mousepro_section(cfg)
             print(
                 "[Config] CONFIG_LOAD status=ok source=disk "
                 f"profiles={len(cfg.get('profiles', {}))} "
@@ -325,6 +333,7 @@ def _save_config_unlocked(cfg):
             "config loaded from fallback defaults is read-only until a strict reload succeeds"
         )
     ensure_config_dir()
+    sanitize_mousepro_section(cfg)
     fd, tmp_path = tempfile.mkstemp(suffix=".tmp", dir=CONFIG_DIR)
     try:
         with os.fdopen(fd, "w", encoding="utf-8") as f:
@@ -510,11 +519,20 @@ def _migrate(cfg):
                 mappings.setdefault(long_press_mapping_key(button), "none")
         cfg["version"] = 11
 
+    if version < 12:
+        # MousePro right-hold gesture + screenshot side-button selection.
+        mousepro = cfg.setdefault("mousepro", {})
+        mousepro.setdefault("right_hold_gesture_enabled", True)
+        mousepro.setdefault(
+            "screenshot_side_buttons", ["xbutton1", "xbutton2"]
+        )
+        cfg["version"] = 12
+
     cfg.setdefault("settings", {})
     cfg["settings"].setdefault("appearance_mode", "system")
     cfg["settings"].setdefault("debug_mode", False)
     cfg["settings"].setdefault("device_layout_overrides", {})
-    cfg["settings"].setdefault("language", "en")
+    cfg["settings"].setdefault("language", "zh_CN")
     cfg["settings"].setdefault("ignore_trackpad", True)
     cfg["settings"].setdefault("screenshot_directory", "")
     cfg["settings"].setdefault("check_for_updates", True)
@@ -575,6 +593,43 @@ def _validate_types(cfg, defaults, path=""):
                   f"expected {type(default_val).__name__}, "
                   f"got {type(cfg[key]).__name__}")
             cfg[key] = default_val
+    return cfg
+
+
+MOUSEPRO_ALLOWED_SIDE_BUTTONS = ("xbutton1", "xbutton2")
+
+
+def sanitize_mousepro_section(cfg):
+    """Validate/repair the top-level ``mousepro`` section in place.
+
+    Unknown button names are filtered to the xbutton1/xbutton2 subset,
+    duplicates removed and order preserved.  An empty or non-list value
+    falls back to the default (both buttons).  Non-bool enabled flags
+    fall back to the default (True).
+    """
+    defaults = DEFAULT_CONFIG["mousepro"]
+    section = cfg.get("mousepro")
+    if not isinstance(section, dict):
+        section = {}
+        cfg["mousepro"] = section
+
+    enabled = section.get("right_hold_gesture_enabled", defaults["right_hold_gesture_enabled"])
+    section["right_hold_gesture_enabled"] = (
+        enabled if isinstance(enabled, bool) else defaults["right_hold_gesture_enabled"]
+    )
+
+    raw_buttons = section.get("screenshot_side_buttons")
+    buttons: list = []
+    if isinstance(raw_buttons, list):
+        for name in raw_buttons:
+            if (
+                name in MOUSEPRO_ALLOWED_SIDE_BUTTONS
+                and name not in buttons
+            ):
+                buttons.append(name)
+    if not buttons:
+        buttons = list(defaults["screenshot_side_buttons"])
+    section["screenshot_side_buttons"] = buttons
     return cfg
 
 

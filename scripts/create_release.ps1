@@ -4,8 +4,8 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-$ProjectName = "PourInput"
-$PackageBaseName = "PourInput"
+$ProjectName = "MousePro"
+$PackageBaseName = "MousePro"
 $Root = Resolve-Path (Join-Path $PSScriptRoot "..")
 $ReleaseDir = Join-Path $Root "release"
 $BuildDir = Join-Path $Root "build"
@@ -75,19 +75,19 @@ foreach ($path in @($BuildDir, $DistDir, $StageRoot)) {
 }
 
 Write-Host "[$ProjectName] Building $VersionTag..."
-$env:POURINPUT_VERSION = $Version
+$env:MOUSEPRO_VERSION = $Version
 try {
-    & (Join-Path $Root ".venv\Scripts\python.exe") -m PyInstaller (Join-Path $Root "PourInput.spec") --noconfirm
+    & (Join-Path $Root ".venv\Scripts\python.exe") -m PyInstaller (Join-Path $Root "MousePro.spec") --noconfirm
     if ($LASTEXITCODE -ne 0) {
         throw "PyInstaller failed with exit code $LASTEXITCODE"
     }
 } finally {
-    Remove-Item Env:\POURINPUT_VERSION -ErrorAction SilentlyContinue
+    Remove-Item Env:\MOUSEPRO_VERSION -ErrorAction SilentlyContinue
 }
 
-$BuiltApp = Join-Path $DistDir "PourInput"
-if (-not (Test-Path -LiteralPath (Join-Path $BuiltApp "PourInput.exe"))) {
-    throw "Build output is missing PourInput.exe: $BuiltApp"
+$BuiltApp = Join-Path $DistDir "MousePro"
+if (-not (Test-Path -LiteralPath (Join-Path $BuiltApp "MousePro.exe"))) {
+    throw "Build output is missing MousePro.exe: $BuiltApp"
 }
 
 Write-Host "[$ProjectName] Staging release..."

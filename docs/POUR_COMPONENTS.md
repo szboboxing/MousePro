@@ -1,6 +1,6 @@
-# PourInput Component Vocabulary
+# MousePro Component Vocabulary
 
-> **Scope:** This document records the approved current PourInput UI. It does not imply that every inline pattern is a reusable QML component. Family tokens and authority rules are in [`POUR_DESIGN_SYSTEM.md`](POUR_DESIGN_SYSTEM.md).
+> **Scope:** This document records the approved current MousePro UI. It does not imply that every inline pattern is a reusable QML component. Family tokens and authority rules are in [`POUR_DESIGN_SYSTEM.md`](POUR_DESIGN_SYSTEM.md).
 
 ## Contents
 

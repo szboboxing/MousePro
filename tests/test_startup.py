@@ -11,12 +11,12 @@ from core import startup as st
 class BuildRunCommandTests(unittest.TestCase):
     def test_frozen_uses_executable_only(self):
         with (
-            patch.object(sys, "executable", r"C:\\Apps\\PourInput App\PourInput.exe"),
+            patch.object(sys, "executable", r"C:\\Apps\\MousePro App\MousePro.exe"),
             patch.object(sys, "frozen", True, create=True),
             patch("os.path.abspath", side_effect=lambda p: p),
         ):
             cmd = st.build_run_command()
-        self.assertEqual(cmd, r'"C:\\Apps\\PourInput App\PourInput.exe"')
+        self.assertEqual(cmd, r'"C:\\Apps\\MousePro App\MousePro.exe"')
 
     def test_script_appends_quoted_argv0(self):
         with (
@@ -130,26 +130,26 @@ class ApplyLoginStartupMacTests(unittest.TestCase):
             patch.object(sys, "platform", "darwin"),
             patch.object(sys, "frozen", False, create=True),
             patch.object(sys, "executable", "/opt/homebrew/bin/python3"),
-            patch.object(sys, "argv", ["/tmp/PourInput/main_qml.py"]),
+            patch.object(sys, "argv", ["/tmp/MousePro/main_qml.py"]),
             patch("os.path.abspath", side_effect=lambda p: p),
         ):
             args = st._program_arguments()
 
         self.assertEqual(
             args,
-            ["/opt/homebrew/bin/python3", "/tmp/PourInput/main_qml.py"],
+            ["/opt/homebrew/bin/python3", "/tmp/MousePro/main_qml.py"],
         )
 
     def test_program_arguments_use_bundle_executable_when_frozen(self):
         with (
             patch.object(sys, "platform", "darwin"),
             patch.object(sys, "frozen", True, create=True),
-            patch.object(sys, "executable", "/Applications/PourInput.app/Contents/MacOS/PourInput"),
+            patch.object(sys, "executable", "/Applications/MousePro.app/Contents/MacOS/MousePro"),
             patch("os.path.abspath", side_effect=lambda p: p),
         ):
             args = st._program_arguments()
 
-        self.assertEqual(args, ["/Applications/PourInput.app/Contents/MacOS/PourInput"])
+        self.assertEqual(args, ["/Applications/MousePro.app/Contents/MacOS/MousePro"])
 
     def test_macos_plist_path_uses_canonical_launch_agent_name(self):
         with patch("os.path.expanduser", side_effect=lambda p: p.replace("~", "/Users/test")):
@@ -157,21 +157,21 @@ class ApplyLoginStartupMacTests(unittest.TestCase):
 
         self.assertEqual(
             plist_path,
-            "/Users/test/Library/LaunchAgents/io.github.pour_soi.pourinput.plist",
+            "/Users/test/Library/LaunchAgents/io.github.szboboxing.mousepro.plist",
         )
 
     def test_macos_enable_writes_plist_and_bootstraps(self):
         domain = "gui/501"
 
         with tempfile.TemporaryDirectory() as tmp:
-            plist = os.path.join(tmp, "LaunchAgents", "io.github.pour_soi.pourinput.plist")
+            plist = os.path.join(tmp, "LaunchAgents", "io.github.szboboxing.mousepro.plist")
 
             with (
                 patch.object(sys, "platform", "darwin"),
                 patch("core.startup.os.getuid", return_value=501, create=True),
                 patch.object(st, "supports_login_startup", return_value=True),
                 patch.object(st, "_macos_plist_path", return_value=plist),
-                patch.object(st, "_program_arguments", return_value=["/X/PourInput"]),
+                patch.object(st, "_program_arguments", return_value=["/X/MousePro"]),
                 patch.object(st, "_launchctl_run") as m_lc,
             ):
                 m_lc.return_value = MagicMock(returncode=0)
@@ -179,7 +179,7 @@ class ApplyLoginStartupMacTests(unittest.TestCase):
 
             with open(plist, "rb") as f:
                 payload = plistlib.load(f)
-            self.assertEqual(payload["ProgramArguments"], ["/X/PourInput"])
+            self.assertEqual(payload["ProgramArguments"], ["/X/MousePro"])
             self.assertTrue(payload["RunAtLoad"])
             self.assertEqual(m_lc.call_count, 1)
             m_lc.assert_called_with(
@@ -190,14 +190,14 @@ class ApplyLoginStartupMacTests(unittest.TestCase):
         domain = "gui/501"
 
         with tempfile.TemporaryDirectory() as tmp:
-            plist = os.path.join(tmp, "io.github.pour_soi.pourinput.plist")
+            plist = os.path.join(tmp, "io.github.szboboxing.mousepro.plist")
 
             with (
                 patch.object(sys, "platform", "darwin"),
                 patch("core.startup.os.getuid", return_value=501, create=True),
                 patch.object(st, "supports_login_startup", return_value=True),
                 patch.object(st, "_macos_plist_path", return_value=plist),
-                patch.object(st, "_program_arguments", return_value=["/X/PourInput"]),
+                patch.object(st, "_program_arguments", return_value=["/X/MousePro"]),
                 patch.object(st, "_launchctl_run") as m_lc,
             ):
                 m_lc.return_value = MagicMock(
@@ -217,14 +217,14 @@ class ApplyLoginStartupMacTests(unittest.TestCase):
         domain = "gui/501"
 
         with tempfile.TemporaryDirectory() as tmp:
-            plist = os.path.join(tmp, "io.github.pour_soi.pourinput.plist")
+            plist = os.path.join(tmp, "io.github.szboboxing.mousepro.plist")
 
             with (
                 patch.object(sys, "platform", "darwin"),
                 patch("core.startup.os.getuid", return_value=501, create=True),
                 patch.object(st, "supports_login_startup", return_value=True),
                 patch.object(st, "_macos_plist_path", return_value=plist),
-                patch.object(st, "_program_arguments", return_value=["/X/PourInput"]),
+                patch.object(st, "_program_arguments", return_value=["/X/MousePro"]),
                 patch.object(st, "_launchctl_run") as m_lc,
                 patch("core.startup.os.remove", side_effect=OSError("cleanup failed")),
             ):
@@ -245,7 +245,7 @@ class ApplyLoginStartupMacTests(unittest.TestCase):
         domain = "gui/501"
 
         with tempfile.TemporaryDirectory() as tmp:
-            plist = os.path.join(tmp, "io.github.pour_soi.pourinput.plist")
+            plist = os.path.join(tmp, "io.github.szboboxing.mousepro.plist")
             with open(plist, "wb") as f:
                 f.write(b"old plist")
 
@@ -254,7 +254,7 @@ class ApplyLoginStartupMacTests(unittest.TestCase):
                 patch("core.startup.os.getuid", return_value=501, create=True),
                 patch.object(st, "supports_login_startup", return_value=True),
                 patch.object(st, "_macos_plist_path", return_value=plist),
-                patch.object(st, "_program_arguments", return_value=["/X/PourInput"]),
+                patch.object(st, "_program_arguments", return_value=["/X/MousePro"]),
                 patch.object(st, "_launchctl_run") as m_lc,
             ):
                 m_lc.side_effect = [
@@ -278,14 +278,14 @@ class ApplyLoginStartupMacTests(unittest.TestCase):
             )
 
     def test_macos_enable_does_not_bootout_when_existing_plist_cannot_be_preserved(self):
-        plist = "/tmp/io.github.pour_soi.pourinput.plist"
+        plist = "/tmp/io.github.szboboxing.mousepro.plist"
 
         with (
             patch.object(sys, "platform", "darwin"),
             patch("core.startup.os.getuid", return_value=501, create=True),
             patch.object(st, "supports_login_startup", return_value=True),
             patch.object(st, "_macos_plist_path", return_value=plist),
-            patch.object(st, "_program_arguments", return_value=["/X/PourInput"]),
+            patch.object(st, "_program_arguments", return_value=["/X/MousePro"]),
             patch.object(st, "_launchctl_run") as m_lc,
             patch("os.makedirs"),
             patch("os.path.isfile", return_value=True),
@@ -300,7 +300,7 @@ class ApplyLoginStartupMacTests(unittest.TestCase):
         domain = "gui/501"
 
         with tempfile.TemporaryDirectory() as tmp:
-            plist = os.path.join(tmp, "io.github.pour_soi.pourinput.plist")
+            plist = os.path.join(tmp, "io.github.szboboxing.mousepro.plist")
             with open(plist, "wb") as f:
                 f.write(b"old plist")
 
@@ -318,7 +318,7 @@ class ApplyLoginStartupMacTests(unittest.TestCase):
                 patch("core.startup.os.getuid", return_value=501, create=True),
                 patch.object(st, "supports_login_startup", return_value=True),
                 patch.object(st, "_macos_plist_path", return_value=plist),
-                patch.object(st, "_program_arguments", return_value=["/X/PourInput"]),
+                patch.object(st, "_program_arguments", return_value=["/X/MousePro"]),
                 patch.object(st, "_launchctl_run") as m_lc,
                 patch.object(st, "_atomic_write_file", side_effect=fake_atomic_write),
             ):
@@ -342,7 +342,7 @@ class ApplyLoginStartupMacTests(unittest.TestCase):
             )
 
     def test_macos_disable_bootout_and_remove_when_plist_exists(self):
-        plist = "/tmp/io.github.pour_soi.pourinput.plist"
+        plist = "/tmp/io.github.szboboxing.mousepro.plist"
         domain = "gui/501"
 
         with (
@@ -364,7 +364,7 @@ class ApplyLoginStartupMacTests(unittest.TestCase):
         m_remove.assert_called_once_with(plist)
 
     def test_macos_disable_uses_label_bootout_when_no_plist(self):
-        plist = "/tmp/io.github.pour_soi.pourinput.plist"
+        plist = "/tmp/io.github.szboboxing.mousepro.plist"
         domain = "gui/501"
 
         with (
@@ -405,16 +405,16 @@ class ApplyLoginStartupLinuxTests(unittest.TestCase):
             patch.object(sys, "platform", "linux"),
             patch.object(sys, "frozen", False, create=True),
             patch.object(sys, "executable", "/usr/bin/python"),
-            patch.object(sys, "argv", ["/tmp/PourInput/main_qml.py"]),
+            patch.object(sys, "argv", ["/tmp/MousePro/main_qml.py"]),
             patch("os.path.abspath", side_effect=lambda p: p),
-            patch("os.path.isfile", side_effect=lambda p: p == "/tmp/PourInput/.venv/bin/python"),
-            patch("os.access", side_effect=lambda p, mode: p == "/tmp/PourInput/.venv/bin/python"),
+            patch("os.path.isfile", side_effect=lambda p: p == "/tmp/MousePro/.venv/bin/python"),
+            patch("os.access", side_effect=lambda p, mode: p == "/tmp/MousePro/.venv/bin/python"),
         ):
             args = st._desktop_exec_parts()
 
         self.assertEqual(
             args,
-            ["/tmp/PourInput/.venv/bin/python", "/tmp/PourInput/main_qml.py"],
+            ["/tmp/MousePro/.venv/bin/python", "/tmp/MousePro/main_qml.py"],
         )
 
     def test_linux_desktop_exec_can_force_visible_window(self):
@@ -422,7 +422,7 @@ class ApplyLoginStartupLinuxTests(unittest.TestCase):
             patch.object(sys, "platform", "linux"),
             patch.object(sys, "frozen", False, create=True),
             patch.object(sys, "executable", "/usr/bin/python"),
-            patch.object(sys, "argv", ["/tmp/PourInput/main_qml.py"]),
+            patch.object(sys, "argv", ["/tmp/MousePro/main_qml.py"]),
             patch("os.path.abspath", side_effect=lambda p: p),
             patch("os.path.isfile", return_value=False),
         ):
@@ -430,7 +430,7 @@ class ApplyLoginStartupLinuxTests(unittest.TestCase):
 
         self.assertEqual(
             args,
-            ["/usr/bin/python", "/tmp/PourInput/main_qml.py", "--show-window"],
+            ["/usr/bin/python", "/tmp/MousePro/main_qml.py", "--show-window"],
         )
 
     def test_linux_enable_writes_launcher_and_autostart_entries(self):
@@ -440,13 +440,13 @@ Exec=@EXEC@
 TryExec=@TRY_EXEC@
 Path=@WORKDIR@
 Icon=@ICON@
-X-PourInput-SourcePath=@SOURCE_PATH@
+X-MousePro-SourcePath=@SOURCE_PATH@
 X-KDE-DBUS-Restricted-Interfaces=org.kde.KWin.ScreenShot2
 @AUTOSTART_LINES@
 """
 
         with tempfile.TemporaryDirectory() as tmpdir:
-            template_path = os.path.join(tmpdir, "PourInput.desktop.in")
+            template_path = os.path.join(tmpdir, "MousePro.desktop.in")
             launcher_path = os.path.join(tmpdir, "applications", st.LINUX_DESKTOP_ENTRY_NAME)
             autostart_path = os.path.join(tmpdir, "autostart", st.LINUX_DESKTOP_ENTRY_NAME)
             with open(template_path, "w", encoding="utf-8") as fh:
@@ -459,13 +459,13 @@ X-KDE-DBUS-Restricted-Interfaces=org.kde.KWin.ScreenShot2
                     st,
                     "_desktop_exec_parts",
                     return_value=[
-                        "/tmp/PourInput Build/.venv/bin/python",
-                        "/tmp/PourInput Build/main_qml.py",
+                        "/tmp/MousePro Build/.venv/bin/python",
+                        "/tmp/MousePro Build/main_qml.py",
                     ],
                 ),
-                patch.object(st, "_runtime_root_dir", return_value="/tmp/PourInput Build"),
-                patch.object(st, "_linux_icon_name_or_path", return_value="/tmp/PourInput Build/images/logo_icon.png"),
-                patch.object(st, "_linux_source_path", return_value="/tmp/PourInput Build/main_qml.py"),
+                patch.object(st, "_runtime_root_dir", return_value="/tmp/MousePro Build"),
+                patch.object(st, "_linux_icon_name_or_path", return_value="/tmp/MousePro Build/images/logo_icon.png"),
+                patch.object(st, "_linux_source_path", return_value="/tmp/MousePro Build/main_qml.py"),
                 patch.object(st, "_linux_template_path", return_value=template_path),
                 patch.object(st, "_linux_desktop_path", return_value=launcher_path),
                 patch.object(st, "_linux_autostart_path", return_value=autostart_path),
@@ -477,11 +477,11 @@ X-KDE-DBUS-Restricted-Interfaces=org.kde.KWin.ScreenShot2
             with open(autostart_path, "r", encoding="utf-8") as fh:
                 autostart_text = fh.read()
 
-        self.assertIn('Exec="/tmp/PourInput Build/.venv/bin/python" "/tmp/PourInput Build/main_qml.py"', launcher_text)
-        self.assertIn("TryExec=/tmp/PourInput Build/.venv/bin/python", launcher_text)
-        self.assertIn("Path=/tmp/PourInput Build", launcher_text)
-        self.assertIn("Icon=/tmp/PourInput Build/images/logo_icon.png", launcher_text)
-        self.assertIn("X-PourInput-SourcePath=/tmp/PourInput Build/main_qml.py", launcher_text)
+        self.assertIn('Exec="/tmp/MousePro Build/.venv/bin/python" "/tmp/MousePro Build/main_qml.py"', launcher_text)
+        self.assertIn("TryExec=/tmp/MousePro Build/.venv/bin/python", launcher_text)
+        self.assertIn("Path=/tmp/MousePro Build", launcher_text)
+        self.assertIn("Icon=/tmp/MousePro Build/images/logo_icon.png", launcher_text)
+        self.assertIn("X-MousePro-SourcePath=/tmp/MousePro Build/main_qml.py", launcher_text)
         self.assertIn(
             "X-KDE-DBUS-Restricted-Interfaces=org.kde.KWin.ScreenShot2",
             launcher_text,
@@ -516,12 +516,12 @@ Exec=@EXEC@
 TryExec=@TRY_EXEC@
 Path=@WORKDIR@
 Icon=@ICON@
-X-PourInput-SourcePath=@SOURCE_PATH@
+X-MousePro-SourcePath=@SOURCE_PATH@
 @AUTOSTART_LINES@
 """
 
         with tempfile.TemporaryDirectory() as tmpdir:
-            template_path = os.path.join(tmpdir, "PourInput.desktop.in")
+            template_path = os.path.join(tmpdir, "MousePro.desktop.in")
             launcher_path = os.path.join(tmpdir, "applications", st.LINUX_DESKTOP_ENTRY_NAME)
             autostart_path = os.path.join(tmpdir, "autostart", st.LINUX_DESKTOP_ENTRY_NAME)
             with open(template_path, "w", encoding="utf-8") as fh:
@@ -533,10 +533,10 @@ X-PourInput-SourcePath=@SOURCE_PATH@
             with (
                 patch.object(sys, "platform", "linux"),
                 patch.object(st, "supports_login_startup", return_value=True),
-                patch.object(st, "_desktop_exec_parts", return_value=["/tmp/PourInput/python"]),
-                patch.object(st, "_runtime_root_dir", return_value="/tmp/PourInput"),
-                patch.object(st, "_linux_icon_name_or_path", return_value="/tmp/PourInput/images/logo_icon.png"),
-                patch.object(st, "_linux_source_path", return_value="/tmp/PourInput"),
+                patch.object(st, "_desktop_exec_parts", return_value=["/tmp/MousePro/python"]),
+                patch.object(st, "_runtime_root_dir", return_value="/tmp/MousePro"),
+                patch.object(st, "_linux_icon_name_or_path", return_value="/tmp/MousePro/images/logo_icon.png"),
+                patch.object(st, "_linux_source_path", return_value="/tmp/MousePro"),
                 patch.object(st, "_linux_template_path", return_value=template_path),
                 patch.object(st, "_linux_desktop_path", return_value=launcher_path),
                 patch.object(st, "_linux_autostart_path", return_value=autostart_path),
@@ -558,10 +558,10 @@ X-PourInput-SourcePath=@SOURCE_PATH@
             with (
                 patch.object(sys, "platform", "linux"),
                 patch.object(st, "supports_login_startup", return_value=True),
-                patch.object(st, "_desktop_exec_parts", return_value=["/tmp/PourInput/python"]),
-                patch.object(st, "_runtime_root_dir", return_value="/tmp/PourInput"),
-                patch.object(st, "_linux_icon_name_or_path", return_value="/tmp/PourInput/images/logo_icon.png"),
-                patch.object(st, "_linux_source_path", return_value="/tmp/PourInput"),
+                patch.object(st, "_desktop_exec_parts", return_value=["/tmp/MousePro/python"]),
+                patch.object(st, "_runtime_root_dir", return_value="/tmp/MousePro"),
+                patch.object(st, "_linux_icon_name_or_path", return_value="/tmp/MousePro/images/logo_icon.png"),
+                patch.object(st, "_linux_source_path", return_value="/tmp/MousePro"),
                 patch.object(st, "_linux_template_path", return_value=missing_template),
                 patch.object(st, "_linux_desktop_path", return_value=launcher_path),
                 patch.object(st, "_linux_autostart_path", return_value=autostart_path),
@@ -647,11 +647,11 @@ X-PourInput-SourcePath=@SOURCE_PATH@
     def test_linux_icon_resolver_falls_back_to_absolute_png(self):
         with (
             patch.object(st, "_sync_linux_icon_theme", return_value=False),
-            patch.object(st, "_linux_icon_path", return_value="/tmp/PourInput/images/logo_icon.png"),
+            patch.object(st, "_linux_icon_path", return_value="/tmp/MousePro/images/logo_icon.png"),
         ):
             self.assertEqual(
                 st._linux_icon_name_or_path(),
-                "/tmp/PourInput/images/logo_icon.png",
+                "/tmp/MousePro/images/logo_icon.png",
             )
 
     def test_linux_runtime_icon_path_prefers_hicolor_asset(self):
@@ -669,11 +669,11 @@ X-PourInput-SourcePath=@SOURCE_PATH@
     def test_linux_runtime_icon_path_falls_back_to_master_png(self):
         with (
             patch.object(st, "_linux_icon_theme_source_root", return_value=""),
-            patch.object(st, "_linux_icon_path", return_value="/tmp/PourInput/images/logo_icon.png"),
+            patch.object(st, "_linux_icon_path", return_value="/tmp/MousePro/images/logo_icon.png"),
         ):
             self.assertEqual(
                 st.linux_runtime_icon_path(),
-                "/tmp/PourInput/images/logo_icon.png",
+                "/tmp/MousePro/images/logo_icon.png",
             )
 
 

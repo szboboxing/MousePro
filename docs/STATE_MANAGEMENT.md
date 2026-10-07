@@ -1,6 +1,6 @@
-# PourInput State Management
+# MousePro State Management
 
-PourInput uses explicit Python objects, JSON persistence, Qt signals, and QML properties rather than a single centralized state store. This document identifies each state class and its owner.
+MousePro uses explicit Python objects, JSON persistence, Qt signals, and QML properties rather than a single centralized state store. This document identifies each state class and its owner.
 
 ## Contents
 

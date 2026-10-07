@@ -1,20 +1,20 @@
 <p align="center">
-  <img src="images/logo.png" alt="PourInput" width="140">
+  <img src="images/logo.png" alt="MousePro" width="140">
 </p>
 
-# PourInput
+# MousePro
 
 ### Your mouse. Your controls.
 
 **English** · [简体中文](README_CN.md)
 
-**PourInput is a mouse customization app.** Make supported mouse buttons perform the actions you need: copying, pasting, switching tabs, taking screenshots, running keyboard shortcuts, and more. Give a click and a long press different actions, then create application profiles that switch automatically as you work.
+**MousePro is a mouse customization app.** Make supported mouse buttons perform the actions you need: copying, pasting, switching tabs, taking screenshots, running keyboard shortcuts, and more. Give a click and a long press different actions, then create application profiles that switch automatically as you work.
 
-[**Download for Windows · v1.4.3**](https://github.com/pour-soi/PourInput/releases/download/v1.4.3/PourInput-v1.4.3-Windows.zip) · [Release notes](https://github.com/pour-soi/PourInput/releases/tag/v1.4.3) · [Full feature gallery](docs/FEATURES.md)
+[**Download for Windows · v1.0.0**](https://github.com/szboboxing/MousePro/releases/download/v1.0.0/MousePro-v1.0.0-Windows.zip) · [Release notes](https://github.com/szboboxing/MousePro/releases/tag/v1.0.0) · [Full feature gallery](docs/FEATURES.md)
 
-![Mouse controls and application profiles in PourInput v1.4.3](images/screenshots-v1.4.3/mouse-en.png)
+![Mouse controls and application profiles in MousePro v1.0.0](images/screenshots-v1.4.3/mouse-en.png)
 
-*Current v1.4.3 interface, rendered with sample profiles and device capabilities. Screenshots illustrate controls; available hardware features depend on your mouse and firmware.*
+*Current v1.0.0 interface, rendered with sample profiles and device capabilities. Screenshots illustrate controls; available hardware features depend on your mouse and firmware.*
 
 ## Put everyday actions on your mouse
 
@@ -28,7 +28,7 @@ Choose a supported button directly on the mouse diagram. Assign browser navigati
 
 ## Different applications, different controls
 
-Keep a default profile for everyday use and add profiles for your browser, editor, or other apps. PourInput changes the active mappings with the focused application. The same side button can go back in your browser and run a shortcut elsewhere.
+Keep a default profile for everyday use and add profiles for your browser, editor, or other apps. MousePro changes the active mappings with the focused application. The same side button can go back in your browser and run a shortcut elsewhere.
 
 ![Application profile selection](images/screenshots-v1.4.3/profiles-en.png)
 
@@ -50,7 +50,7 @@ Choose light, dark, or system appearance and English or Simplified Chinese. Conf
 
 ## Reading Mode: mouse control for a specific activity
 
-Mouse customization is PourInput's core. Reading Mode extends that idea: beyond deciding what a button does, a mouse can adapt to the activity you are doing. It is an example of bringing mouse control into a complete workflow, while keeping your everyday mappings intact.
+Mouse customization is MousePro's core. Reading Mode extends that idea: beyond deciding what a button does, a mouse can adapt to the activity you are doing. It is an example of bringing mouse control into a complete workflow, while keeping your everyday mappings intact.
 
 ### Read local books in a floating panel
 
@@ -60,7 +60,7 @@ Import **TXT or EPUB** and use the wheel to move through the text, or start **sm
 
 ### Find your place with chapters
 
-EPUB contents and recognized TXT headings appear in the chapter selector. When explicit headings are absent, PourInput can suggest titles from line spacing and short standalone lines. Suggestions are labeled and require confirmation; they may be incomplete or incorrect. A jump starts at the chapter title on its own line. Older imports may need reimporting for accurate contents.
+EPUB contents and recognized TXT headings appear in the chapter selector. When explicit headings are absent, MousePro can suggest titles from line spacing and short standalone lines. Suggestions are labeled and require confirmation; they may be incomplete or incorrect. A jump starts at the chapter title on its own line. Older imports may need reimporting for accurate contents.
 
 ### A panel you can adjust and hide
 
@@ -76,15 +76,15 @@ Reading OFF restores ordinary wheel scrolling. Reading ON temporarily claims the
 
 ## Get started on Windows
 
-[**Download PourInput v1.4.3 for Windows**](https://github.com/pour-soi/PourInput/releases/download/v1.4.3/PourInput-v1.4.3-Windows.zip)
+[**Download MousePro v1.0.0 for Windows**](https://github.com/szboboxing/MousePro/releases/download/v1.0.0/MousePro-v1.0.0-Windows.zip)
 
 1. Extract the **entire ZIP** to a short path, such as `F:\Apps`. Do not run the app inside the ZIP or skip files if extraction fails.
-2. Quit any older PourInput instance from its **system tray menu**. Closing the settings window only hides it.
-3. Open `PourInput/PourInput.exe`. No separate Python installation is needed.
+2. Quit any older MousePro instance from its **system tray menu**. Closing the settings window only hides it.
+3. Open `MousePro/MousePro.exe`. No separate Python installation is needed.
 4. To customize buttons, open the mouse page and select a button.
 5. Add application profiles and enable Generic Mouse Mode if you want to customize standard middle and side buttons.
 
-The Windows executable is unsigned. Downloads include a SHA-256 checksum and an update manifest on the [release page](https://github.com/pour-soi/PourInput/releases/tag/v1.4.3).
+The Windows executable is unsigned. Downloads include a SHA-256 checksum and an update manifest on the [release page](https://github.com/szboboxing/MousePro/releases/tag/v1.0.0).
 
 ## Device and platform notes
 
@@ -92,15 +92,15 @@ The Windows executable is unsigned. Downloads include a SHA-256 checksum and an 
 
 Generic Mouse Mode currently maps the middle button and two side buttons. It cannot distinguish multiple standard mice by physical device, and it does not offer general left/right-button or vertical-wheel remapping. Reading's wheel override is a separate feature.
 
-Other Logitech models may work when they expose the required HID++ controls. If a device is detected but a control is missing, include the device information exported from the mouse page in a [device support request](https://github.com/pour-soi/PourInput/issues).
+Other Logitech models may work when they expose the required HID++ controls. If a device is detected but a control is missing, include the device information exported from the mouse page in a [device support request](https://github.com/szboboxing/MousePro/issues).
 
 ### macOS edition
 
-The separate macOS release is **v1.3.4-macos.1**. The Windows reading and automatic scrolling features shown above are not included in that release.
+The macOS release is **v1.0.0**. The Windows reading and automatic scrolling features shown above are not included in that release.
 
-[Apple Silicon download](https://github.com/pour-soi/PourInput/releases/download/v1.3.4-macos.1/PourInput-1.3.4-macOS-arm64.zip) · [Intel download](https://github.com/pour-soi/PourInput/releases/download/v1.3.4-macos.1/PourInput-1.3.4-macOS-x86_64.zip) · [macOS release notes](https://github.com/pour-soi/PourInput/releases/tag/v1.3.4-macos.1)
+[Apple Silicon download](https://github.com/szboboxing/MousePro/releases/download/v1.0.0/MousePro-macOS.zip) · [Intel download](https://github.com/szboboxing/MousePro/releases/download/v1.0.0/MousePro-macOS-intel.zip) · [macOS release notes](https://github.com/szboboxing/MousePro/releases/tag/v1.0.0)
 
-Extract the matching package, open `PourInput.app`, and grant Accessibility permission when prompted. This build is unsigned and unnotarized. Intel hardware testing used a MacBook Air and MX Master 3; Apple Silicon has build validation only. Generic Mouse Mode is Windows-only. Linux remains validation-only.
+Extract the matching package, open `MousePro.app`, and grant Accessibility permission when prompted. This build is unsigned and unnotarized. Intel hardware testing used a MacBook Air and MX Master 3; Apple Silicon has build validation only. Generic Mouse Mode is Windows-only. Linux remains validation-only.
 
 ## Quick help
 
@@ -121,6 +121,6 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m unittest discover -s tests
 ```
 
-Maintained by **pour-soi**. Early development used work from [Mouser](https://github.com/TomBadash/Mouser); PourInput is independently maintained and does not require Mouser to run.
+Maintained by **szboboxing**. MousePro is forked from [pour-soi/PourInput](https://github.com/pour-soi/PourInput) (MIT); early upstream development used work from [Mouser](https://github.com/TomBadash/Mouser). MousePro is independently maintained and does not require Mouser to run.
 
-[MIT license](LICENSE) · [Changelog](CHANGELOG.md) · [Issues](https://github.com/pour-soi/PourInput/issues)
+[MIT license](LICENSE) · [Changelog](CHANGELOG.md) · [Issues](https://github.com/szboboxing/MousePro/issues)

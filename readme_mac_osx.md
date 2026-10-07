@@ -1,6 +1,6 @@
-# PourInput macOS Support
+# MousePro macOS Support
 
-PourInput includes experimental macOS support alongside its primary Windows application. This document covers macOS-specific setup and known differences.
+MousePro includes experimental macOS support alongside its primary Windows application. This document covers macOS-specific setup and known differences.
 
 ## Requirements
 
@@ -22,7 +22,7 @@ On macOS, this will also install:
 
 ## Granting Accessibility Permission
 
-PourInput uses a **CGEventTap** to intercept and suppress mouse button events. macOS requires Accessibility permission for this:
+MousePro uses a **CGEventTap** to intercept and suppress mouse button events. macOS requires Accessibility permission for this:
 
 1. Open **System Settings → Privacy & Security → Accessibility**
 2. Click the **+** button
@@ -31,9 +31,9 @@ PourInput uses a **CGEventTap** to intercept and suppress mouse button events. m
   - The Python binary (e.g. `/usr/local/bin/python3`)
   - The built `.app` bundle (if packaged)
 4. Ensure the checkbox is **enabled**
-5. Restart PourInput if it was already running
+5. Restart MousePro if it was already running
 
-If Accessibility is not granted, PourInput will print:
+If Accessibility is not granted, MousePro will print:
 ```
 [MouseHook] ERROR: Failed to create CGEventTap!
 ```
@@ -49,7 +49,7 @@ If Accessibility is not granted, PourInput will print:
 | Gesture button | HID++ + Raw Input fallback | HID++ + event-tap movement |
 | Scroll inversion | Coalesced SendInput | CGEventCreateScrollWheelEvent |
 | Modifier key | Ctrl | Cmd (⌘) |
-| Config location | `%APPDATA%\\PourInput` | `~/Library/Application Support/PourInput` |
+| Config location | `%APPDATA%\\MousePro` | `~/Library/Application Support/MousePro` |
 | Auto-reconnect | Device change notification | HID++ reconnect loop |
 
 ### Key Mapping Differences
@@ -64,18 +64,18 @@ Actions that use **Ctrl** on Windows automatically use **Cmd (⌘)** on macOS:
 Desktop/navigation actions are also remapped to native macOS behavior:
 - **Alt+Tab** becomes **Cmd+Tab**
 - Compatibility entries like **Win+D** / **Task View** resolve to native macOS navigation shortcuts
-- PourInput also exposes macOS-specific actions such as **Mission Control**, **App Expose**, **Previous Desktop**, **Next Desktop**, **Show Desktop**, and **Launchpad**
+- MousePro also exposes macOS-specific actions such as **Mission Control**, **App Expose**, **Previous Desktop**, **Next Desktop**, **Show Desktop**, and **Launchpad**
 
 ### HID Access
 
 On macOS, the HID gesture listener uses non-exclusive access (`hid_darwin_set_open_exclusive(0)`)
-so the mouse continues to function normally while PourInput reads HID++ reports.
+so the mouse continues to function normally while MousePro reads HID++ reports.
 
 ### Trackpad and Magic Mouse Scroll
 
-PourInput ignores trackpad and Magic Mouse continuous scroll events by default so two-finger gestures and macOS natural scrolling keep working normally while mouse wheel mappings stay active.
+MousePro ignores trackpad and Magic Mouse continuous scroll events by default so two-finger gestures and macOS natural scrolling keep working normally while mouse wheel mappings stay active.
 
-You can change this in **Point & Scroll → Scroll Direction → Ignore trackpad**. Leave it enabled for built-in trackpads and most Logitech mouse setups. Disable it only if you intentionally want PourInput to handle Magic Mouse or trackpad scroll events.
+You can change this in **Point & Scroll → Scroll Direction → Ignore trackpad**. Leave it enabled for built-in trackpads and most Logitech mouse setups. Disable it only if you intentionally want MousePro to handle Magic Mouse or trackpad scroll events.
 
 ## Building a Native macOS App
 
@@ -89,19 +89,19 @@ python3 -m pip install -r requirements.txt pyinstaller
 This produces:
 
 ```text
-dist/PourInput.app
+dist/MousePro.app
 ```
 
 Notes:
 
 - Build on the target architecture. On an M1/M2/M3 Mac, use an `arm64` Python to produce an Apple Silicon app; on an Intel Mac, use an `x86_64` Python to produce an Intel app.
 - You can also set `PYINSTALLER_TARGET_ARCH=arm64` or `PYINSTALLER_TARGET_ARCH=x86_64` before running `./build_macos_app.sh` when your macOS Python environment supports that target.
-- The build flow uses the committed `images/AppIcon.icns` when present; otherwise the script generates an `.icns` icon from `images/logo_icon.png`, then runs PyInstaller with `PourInput-mac.spec`.
-- Signing path depends on `POURINPUT_SIGN_IDENTITY`. Unset: the bundle is ad-hoc signed (`codesign --sign -`), which is fine for one-off builds but can rotate the code identity on every rebuild, so macOS Accessibility grants may reset. Set to a codesigning identity (list with `security find-identity -v -p codesigning`, SHA-1 form preferred): the script signs nested `.dylib` / `.so` / `.framework` files depth-first with `--options runtime`, then signs the outer bundle with `build_resources/PourInput.entitlements`, then runs `codesign --verify --deep --strict` and aborts the build if it fails. Stable permission behavior depends on unchanged source, resolved Python interpreter, dependencies, architecture, signing identity, entitlements, and timestamp policy.
+- The build flow uses the committed `images/AppIcon.icns` when present; otherwise the script generates an `.icns` icon from `images/logo_icon.png`, then runs PyInstaller with `MousePro-mac.spec`.
+- Signing path depends on `POURINPUT_SIGN_IDENTITY`. Unset: the bundle is ad-hoc signed (`codesign --sign -`), which is fine for one-off builds but can rotate the code identity on every rebuild, so macOS Accessibility grants may reset. Set to a codesigning identity (list with `security find-identity -v -p codesigning`, SHA-1 form preferred): the script signs nested `.dylib` / `.so` / `.framework` files depth-first with `--options runtime`, then signs the outer bundle with `build_resources/MousePro.entitlements`, then runs `codesign --verify --deep --strict` and aborts the build if it fails. Stable permission behavior depends on unchanged source, resolved Python interpreter, dependencies, architecture, signing identity, entitlements, and timestamp policy.
 - This signed path is for local repeated developer builds. It is not a notarized release-signing workflow; public macOS release zips remain ad-hoc signed until a separate Developer ID signing, secure timestamp, notarization, stapling, and Gatekeeper assessment workflow exists.
-- The app can then be moved to `/Applications/PourInput.app` and launched directly from Finder, Spotlight, or Dock.
-- `pyinstaller PourInput.spec` remains available as a simpler cross-platform build path, but the dedicated macOS script is the preferred bundle flow.
-- Release builds publish `PourInput-macOS.zip` for Apple Silicon and `PourInput-macOS-intel.zip` for Intel Macs.
+- The app can then be moved to `/Applications/MousePro.app` and launched directly from Finder, Spotlight, or Dock.
+- `pyinstaller MousePro.spec` remains available as a simpler cross-platform build path, but the dedicated macOS script is the preferred bundle flow.
+- Release builds publish `MousePro-macOS.zip` for Apple Silicon and `MousePro-macOS-intel.zip` for Intel Macs.
 
 The packaged app runs as an `LSUIElement`, so it lives in the menu bar instead of showing a Dock icon.
 
@@ -116,22 +116,22 @@ Use `--start-hidden` to launch straight into the menu bar without opening the se
 
 ## Start at Login
 
-PourInput can manage **Start at login** from the app UI on macOS.
+MousePro can manage **Start at login** from the app UI on macOS.
 
-- The toggle writes a LaunchAgent plist to `~/Library/LaunchAgents/io.github.pour_soi.pourinput.plist`
+- The toggle writes a LaunchAgent plist to `~/Library/LaunchAgents/io.github.szboboxing.mousepro.plist`
 - The setting is designed for the packaged `.app`, but it also works in a source checkout by launching the current Python interpreter directly
-- If **Start minimized** is enabled in PourInput, the app still launches tray-first after login because that preference is read from config at startup
+- If **Start minimized** is enabled in MousePro, the app still launches tray-first after login because that preference is read from config at startup
 - Turning **Start at login** back off removes that LaunchAgent plist again
 
 ## Accessibility for the Packaged App
 
-If you switch from Terminal-based startup to `PourInput.app`, re-grant Accessibility for the app bundle:
+If you switch from Terminal-based startup to `MousePro.app`, re-grant Accessibility for the app bundle:
 
 1. Open **System Settings → Privacy & Security → Accessibility**
 2. Remove old Terminal / Python entries if needed
-3. Add **PourInput.app**
+3. Add **MousePro.app**
 4. Ensure it is enabled
-5. Restart PourInput
+5. Restart MousePro
 
 ## Debugging
 

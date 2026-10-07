@@ -11,10 +11,10 @@ UPSTREAM_PRODUCT = bytes((77, 111, 117, 115, 101, 114)).decode("ascii")
 
 class ProductIndependenceTests(unittest.TestCase):
     def test_product_owned_runtime_identifiers(self):
-        self.assertEqual(version.APP_NAME, "PourInput")
-        self.assertEqual(version.MAINTAINER, "pour-soi")
-        self.assertEqual(Path(config.CONFIG_DIR).name, "PourInput")
-        self.assertEqual(updater.DEFAULT_RELEASE_REPO, "pour-soi/PourInput")
+        self.assertEqual(version.APP_NAME, "MousePro")
+        self.assertEqual(version.MAINTAINER, "szboboxing")
+        self.assertEqual(Path(config.CONFIG_DIR).name, "MousePro")
+        self.assertEqual(updater.DEFAULT_RELEASE_REPO, "szboboxing/MousePro")
 
     def test_runtime_and_visible_ui_do_not_reference_upstream_product(self):
         paths = [ROOT / "main_qml.py", *sorted((ROOT / "core").glob("*.py"))]

@@ -29,8 +29,8 @@ class SingleInstanceServerNameTests(unittest.TestCase):
             a = main_qml._single_instance_server_name()
             b = main_qml._single_instance_server_name()
         self.assertEqual(a, b)
-        self.assertTrue(a.startswith("POURINPUT_instance_"))
-        self.assertEqual(len(a), len("POURINPUT_instance_") + 16)
+        self.assertTrue(a.startswith("MOUSEPRO_instance_"))
+        self.assertEqual(len(a), len("MOUSEPRO_instance_") + 16)
 
 
 class _FakeWinFunc:
@@ -141,7 +141,7 @@ class SingleInstanceAcquireTests(unittest.TestCase):
 
     def test_primary_integration_unique_pipe(self):
         app = _ensure_qapp()
-        name = f"POURINPUT_unittest_{uuid.uuid4().hex}"
+        name = f"MOUSEPRO_unittest_{uuid.uuid4().hex}"
         server, code = main_qml._single_instance_acquire(app, name)
         self.addCleanup(lambda: (server.close(), QLocalServer.removeServer(name)))
         self.assertIsNone(code)

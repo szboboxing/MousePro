@@ -50,6 +50,36 @@ SCREENSHOT_ACTIONS = frozenset({
     "screenshot_full_file",
 })
 
+# MousePro quick actions (Windows-only implementations).  The IDs are
+# registered in every platform ACTIONS table so the action picker can
+# show them, but only the Windows branch actually performs them.
+MOUSEPRO_QUICK_ACTION_IDS = frozenset({
+    "enhanced_paste",
+    "calculator",
+    "browser",
+    "media_player",
+    "pointer_size",
+    "brightness_up",
+    "brightness_down",
+    "contrast_up",
+    "contrast_down",
+})
+MOUSEPRO_SYSTEM_SCREENSHOT = "system_screenshot"
+
+# English labels shared by every platform ACTIONS table.
+MOUSEPRO_ACTION_LABELS = (
+    ("enhanced_paste", "Enhanced Paste (New Folder + Paste)"),
+    ("calculator", "Calculator"),
+    ("browser", "Open Browser"),
+    ("media_player", "Media Player"),
+    ("pointer_size", "Mouse Pointer Size Settings"),
+    ("brightness_up", "Brightness Up"),
+    ("brightness_down", "Brightness Down"),
+    ("contrast_up", "Contrast Up"),
+    ("contrast_down", "Contrast Down"),
+    (MOUSEPRO_SYSTEM_SCREENSHOT, "System Screenshot (Win+Shift+S)"),
+)
+
 _screenshot_action_handler = None
 
 
@@ -161,6 +191,11 @@ if sys.platform == "win32":
     import ctypes
     import ctypes.wintypes as wintypes
     from ctypes import Structure, Union, c_ulong, c_ushort, c_long, sizeof
+
+    try:
+        from core import system_actions as _system_actions
+    except Exception:  # pragma: no cover - pywin32 must remain optional
+        _system_actions = None
 
     INPUT_MOUSE = 0
     INPUT_KEYBOARD = 1
@@ -622,6 +657,57 @@ if sys.platform == "win32":
             "keys": [],
             "category": "Screenshot",
         },
+        # ── MousePro enhancements (Windows) ─────────────────────────
+        "enhanced_paste": {
+            "label": "Enhanced Paste (New Folder + Paste)",
+            "keys": [],
+            "category": "MousePro",
+        },
+        "calculator": {
+            "label": "Calculator",
+            "keys": [],
+            "category": "MousePro",
+        },
+        "browser": {
+            "label": "Open Browser",
+            "keys": [],
+            "category": "MousePro",
+        },
+        "media_player": {
+            "label": "Media Player",
+            "keys": [],
+            "category": "MousePro",
+        },
+        "pointer_size": {
+            "label": "Mouse Pointer Size Settings",
+            "keys": [],
+            "category": "MousePro",
+        },
+        "brightness_up": {
+            "label": "Brightness Up",
+            "keys": [],
+            "category": "MousePro",
+        },
+        "brightness_down": {
+            "label": "Brightness Down",
+            "keys": [],
+            "category": "MousePro",
+        },
+        "contrast_up": {
+            "label": "Contrast Up",
+            "keys": [],
+            "category": "MousePro",
+        },
+        "contrast_down": {
+            "label": "Contrast Down",
+            "keys": [],
+            "category": "MousePro",
+        },
+        "system_screenshot": {
+            "label": "System Screenshot (Win+Shift+S)",
+            "keys": [VK_LWIN, VK_SHIFT, VK_S],
+            "category": "MousePro",
+        },
         "none": {
             "label": "Do Nothing (Pass-through)",
             "keys": [],
@@ -670,6 +756,20 @@ if sys.platform == "win32":
             if is_screenshot_action(action_id):
                 if not request_screenshot_action(action_id):
                     print(f"[KeySimulator] action execution failed: {action_id}")
+                return
+            if action_id == MOUSEPRO_SYSTEM_SCREENSHOT:
+                send_key_combo([VK_LWIN, VK_SHIFT, VK_S])
+                print(f"[KeySimulator] action input sequence completed: {action_id}")
+                return
+            if action_id in MOUSEPRO_QUICK_ACTION_IDS:
+                if _system_actions is None:
+                    print(f"[KeySimulator] action unavailable: {action_id}")
+                    return
+                result = _system_actions.execute_quick_action(action_id)
+                print(
+                    f"[KeySimulator] quick action {action_id} "
+                    f"ok={result.success} detail={result.detail}"
+                )
                 return
             action = ACTIONS.get(action_id)
             if not action or not action["keys"]:
@@ -1267,6 +1367,15 @@ elif sys.platform == "darwin":
             "keys": [kVK_Command, kVK_Shift, kVK_ANSI_3],
             "category": "Screenshot",
         },
+        # ── MousePro enhancements (Windows-only, no-op here) ───────
+        **{
+            _mousepro_id: {
+                "label": _mousepro_label,
+                "keys": [],
+                "category": "MousePro",
+            }
+            for _mousepro_id, _mousepro_label in MOUSEPRO_ACTION_LABELS
+        },
         "none": {
             "label": "Do Nothing (Pass-through)",
             "keys": [],
@@ -1308,6 +1417,12 @@ elif sys.platform == "darwin":
             inject_mouse_up(action_id)
             return
         if request_screenshot_action(action_id):
+            return
+        if (
+            action_id in MOUSEPRO_QUICK_ACTION_IDS
+            or action_id == MOUSEPRO_SYSTEM_SCREENSHOT
+        ):
+            print(f"[KeySimulator] MousePro action is Windows-only: {action_id}")
             return
         action = ACTIONS.get(action_id)
         if not action:
@@ -1436,7 +1551,7 @@ elif sys.platform == "linux":
                 from evdev import ecodes, UInput
                 _virtual_kbd = UInput(
                     {ecodes.EV_KEY: _ALL_KEY_CODES + list(_LINUX_MOUSE_BUTTON_MAP.values())},
-                    name="PourInput Virtual Keyboard",
+                    name="MousePro Virtual Keyboard",
                 )
                 return _virtual_kbd
             except ImportError:
@@ -1709,6 +1824,15 @@ elif sys.platform == "linux":
             "keys": [],
             "category": "Screenshot",
         },
+        # ── MousePro enhancements (Windows-only, no-op here) ───────
+        **{
+            _mousepro_id: {
+                "label": _mousepro_label,
+                "keys": [],
+                "category": "MousePro",
+            }
+            for _mousepro_id, _mousepro_label in MOUSEPRO_ACTION_LABELS
+        },
         "none": {
             "label": "Do Nothing (Pass-through)",
             "keys": [],
@@ -1753,6 +1877,12 @@ elif sys.platform == "linux":
             return
         if request_screenshot_action(action_id):
             return
+        if (
+            action_id in MOUSEPRO_QUICK_ACTION_IDS
+            or action_id == MOUSEPRO_SYSTEM_SCREENSHOT
+        ):
+            print(f"[KeySimulator] MousePro action is Windows-only: {action_id}")
+            return
         action = ACTIONS.get(action_id)
         if not action or not action["keys"]:
             return
@@ -1770,7 +1900,14 @@ else:
     def inject_scroll(flags, delta): pass
     def send_key_combo(keys, hold_ms=50): pass
     def send_key_press(vk): pass
-    def execute_action(action_id): pass
+
+    def execute_action(action_id):
+        if (
+            action_id in MOUSEPRO_QUICK_ACTION_IDS
+            or action_id == MOUSEPRO_SYSTEM_SCREENSHOT
+        ):
+            print(f"[KeySimulator] MousePro action is Windows-only: {action_id}")
+
     def inject_mouse_down(action_id): pass
     def inject_mouse_up(action_id): pass
     def is_mouse_button_action(action_id): return False
@@ -1790,6 +1927,14 @@ else:
             "label": "Cycle DPI Presets",
             "keys": [],               # handled by Engine, not key_simulator
             "category": "Scroll",
+        },
+        **{
+            _mousepro_id: {
+                "label": _mousepro_label,
+                "keys": [],
+                "category": "MousePro",
+            }
+            for _mousepro_id, _mousepro_label in MOUSEPRO_ACTION_LABELS
         },
         "none": {
             "label": "Do Nothing (Pass-through)",

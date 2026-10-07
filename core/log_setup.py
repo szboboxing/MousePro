@@ -13,16 +13,16 @@ import threading
 
 def _get_log_dir() -> str:
     if sys.platform == "darwin":
-        return os.path.join(os.path.expanduser("~"), "Library", "Logs", "PourInput")
+        return os.path.join(os.path.expanduser("~"), "Library", "Logs", "MousePro")
     elif sys.platform == "linux":
         xdg_state = os.environ.get(
             "XDG_STATE_HOME",
             os.path.join(os.path.expanduser("~"), ".local", "state"),
         )
-        return os.path.join(xdg_state, "PourInput", "logs")
+        return os.path.join(xdg_state, "MousePro", "logs")
     else:  # Windows
         appdata = os.environ.get("APPDATA", os.path.expanduser("~"))
-        return os.path.join(appdata, "PourInput", "logs")
+        return os.path.join(appdata, "MousePro", "logs")
 
 
 class _StreamToLogger:
@@ -83,7 +83,7 @@ def setup_logging() -> str:
     log_path = ""
     try:
         os.makedirs(log_dir, mode=0o700, exist_ok=True)
-        log_path = os.path.join(log_dir, "PourInput.log")
+        log_path = os.path.join(log_dir, "MousePro.log")
         file_handler = logging.handlers.RotatingFileHandler(
             log_path,
             maxBytes=5 * 1024 * 1024,  # 5 MB per file

@@ -29,10 +29,10 @@ class MacOSBuildScriptTests(unittest.TestCase):
         (self.root / "images").mkdir()
         (self.root / "images" / "AppIcon.icns").write_text("icon", encoding="utf-8")
         (self.root / "build_resources").mkdir()
-        (self.root / "build_resources" / "PourInput.entitlements").write_text(
+        (self.root / "build_resources" / "MousePro.entitlements").write_text(
             "<plist/>", encoding="utf-8"
         )
-        (self.root / "PourInput-mac.spec").write_text("# fake spec", encoding="utf-8")
+        (self.root / "MousePro-mac.spec").write_text("# fake spec", encoding="utf-8")
 
         self._write_command("uname", "printf 'Darwin\\n'\n")
         self._write_codesign()
@@ -125,7 +125,7 @@ class MacOSBuildScriptTests(unittest.TestCase):
                 fi
                 if [ "${{1:-}}" = "-m" ] && [ "${{2:-}}" = "PyInstaller" ]; then
                   printf 'pyinstaller\\t%s\\t%s\\t%s\\n' "$label" "${{PYTHONHASHSEED:-}}" "$*" >> "$POURINPUT_TEST_LOG"
-                  app="$POURINPUT_TEST_ROOT/dist/PourInput.app"
+                  app="$POURINPUT_TEST_ROOT/dist/MousePro.app"
                   frameworks="$app/Contents/Frameworks"
                   mkdir -p "$frameworks/Outer.framework/Frameworks/Inner.framework"
                   touch "$frameworks/libRoot.dylib"

@@ -1,5 +1,5 @@
 """
-Device-layout registry for PourInput's interactive mouse view.
+Device-layout registry for MousePro's interactive mouse view.
 
 The goal is to keep device-specific visual layout data out of QML so adding a
 new Logitech family becomes a data change instead of a UI rewrite.
@@ -96,7 +96,7 @@ GENERIC_MOUSE_LAYOUT = {
     "manual_selectable": False,
     "note": (
         "This device is detected and the backend can still probe HID++ features, "
-        "but PourInput does not have a dedicated visual overlay for it yet."
+        "but MousePro does not have a dedicated visual overlay for it yet."
     ),
     "hotspots": [],
 }

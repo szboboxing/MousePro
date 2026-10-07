@@ -16,9 +16,9 @@ permissions:
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
   RELEASE_TAG: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || github.event.inputs.release_tag }}
-  POURINPUT_VERSION: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || github.event.inputs.release_tag }}
-  POURINPUT_GIT_DIRTY: "false"
-  WINDOWS_ARCHIVE_NAME: ${{ format('PourInput-{0}-Windows.zip', startsWith(github.ref, 'refs/tags/') && github.ref_name || github.event.inputs.release_tag) }}
+  MOUSEPRO_VERSION: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || github.event.inputs.release_tag }}
+  MOUSEPRO_GIT_DIRTY: "false"
+  WINDOWS_ARCHIVE_NAME: ${{ format('MousePro-{0}-Windows.zip', startsWith(github.ref, 'refs/tags/') && github.ref_name || github.event.inputs.release_tag) }}
 
 jobs:
   # v1.3.5 uses the independently validated Windows archive; never rebuild or replace it.
@@ -35,7 +35,7 @@ jobs:
         run: |
           test "$(git rev-parse HEAD)" = "$(git rev-parse "refs/tags/$RELEASE_TAG^{commit}")"
           test -z "$(git status --porcelain)"
-          echo "POURINPUT_GIT_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          echo "MOUSEPRO_GIT_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
 
       - uses: actions/setup-python@v6
         with:
@@ -50,19 +50,19 @@ jobs:
           $python = (Get-Command python).Source
           $gitDirectory = Split-Path (Get-Command git).Source
           $env:PATH = "$(Split-Path $python);$gitDirectory;$env:WINDIR\System32;$env:WINDIR"
-          & $python -m PyInstaller PourInput.spec --noconfirm
+          & $python -m PyInstaller MousePro.spec --noconfirm
           if ($LASTEXITCODE -ne 0) { throw "PyInstaller failed" }
-          if (Test-Path dist/PourInput/_internal/icuuc.dll) { throw "Unexpected non-system ICU library" }
+          if (Test-Path dist/MousePro/_internal/icuuc.dll) { throw "Unexpected non-system ICU library" }
 
       - name: Smoke test Windows startup
         shell: pwsh
         run: |
-          $env:APPDATA = Join-Path $env:RUNNER_TEMP "pourinput-smoke"
-          $process = Start-Process -FilePath (Resolve-Path dist/PourInput/PourInput.exe) -WindowStyle Hidden -PassThru
+          $env:APPDATA = Join-Path $env:RUNNER_TEMP "mousepro-smoke"
+          $process = Start-Process -FilePath (Resolve-Path dist/MousePro/MousePro.exe) -WindowStyle Hidden -PassThru
           try {
             Start-Sleep -Seconds 10
             if ($process.HasExited) { throw "Packaged application exited during startup" }
-            $log = Get-Content (Join-Path $env:APPDATA "PourInput/logs/PourInput.log") -Raw
+            $log = Get-Content (Join-Path $env:APPDATA "MousePro/logs/MousePro.log") -Raw
             if ($log -notmatch "QML load:" -or $log -match "Traceback") { throw "Packaged QML startup failed" }
             Write-Output $log
           } finally {
@@ -72,12 +72,12 @@ jobs:
       - name: Stage release documentation
         shell: pwsh
         run: |
-          Copy-Item LICENSE, README.md, README_CN.md, CHANGELOG.md, RELEASE_NOTES.md dist/PourInput/
-          New-Item -ItemType Directory -Force dist/PourInput/images | Out-Null
-          Copy-Item images/Screenshot*.png, images/logo.png dist/PourInput/images/
+          Copy-Item LICENSE, README.md, README_CN.md, CHANGELOG.md, RELEASE_NOTES.md dist/MousePro/
+          New-Item -ItemType Directory -Force dist/MousePro/images | Out-Null
+          Copy-Item images/Screenshot*.png, images/logo.png dist/MousePro/images/
 
       - name: Create archive
-        run: Compress-Archive -Path dist\\PourInput -DestinationPath "${{ env.WINDOWS_ARCHIVE_NAME }}"
+        run: Compress-Archive -Path dist\\MousePro -DestinationPath "${{ env.WINDOWS_ARCHIVE_NAME }}"
 
       - name: Create SHA-256 checksum
         shell: pwsh
@@ -87,7 +87,7 @@ jobs:
 
       - uses: actions/upload-artifact@v7
         with:
-          name: PourInput-Windows
+          name: MousePro-Windows
           path: |
             ${{ env.WINDOWS_ARCHIVE_NAME }}
             ${{ env.WINDOWS_ARCHIVE_NAME }}.sha256
@@ -103,14 +103,14 @@ jobs:
             runner: macos-15
             python_architecture: arm64
             pyinstaller_target_arch: arm64
-            artifact_name: PourInput-macOS
-            archive_name: PourInput-macOS.zip
+            artifact_name: MousePro-macOS
+            archive_name: MousePro-macOS.zip
           - name: Intel
             runner: macos-15-intel
             python_architecture: x64
             pyinstaller_target_arch: x86_64
-            artifact_name: PourInput-macOS-intel
-            archive_name: PourInput-macOS-intel.zip
+            artifact_name: MousePro-macOS-intel
+            archive_name: MousePro-macOS-intel.zip
     runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v6
@@ -122,7 +122,7 @@ jobs:
         run: |
           test "$(git rev-parse HEAD)" = "$(git rev-parse "refs/tags/$RELEASE_TAG^{commit}")"
           test -z "$(git status --porcelain)"
-          echo "POURINPUT_GIT_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          echo "MOUSEPRO_GIT_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
 
       - uses: actions/setup-python@v6
         with:
@@ -140,7 +140,7 @@ jobs:
           ./build_macos_app.sh
 
       - name: Create archive
-        run: cd dist && zip -r -y "../${{ matrix.archive_name }}" PourInput.app
+        run: cd dist && zip -r -y "../${{ matrix.archive_name }}" MousePro.app
 
       - uses: actions/upload-artifact@v7
         with:
@@ -160,7 +160,7 @@ jobs:
         run: |
           test "$(git rev-parse HEAD)" = "$(git rev-parse "refs/tags/$RELEASE_TAG^{commit}")"
           test -z "$(git status --porcelain)"
-          echo "POURINPUT_GIT_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          echo "MOUSEPRO_GIT_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
 
       - uses: actions/setup-python@v6
         with:
@@ -186,7 +186,7 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Build with PyInstaller
-        run: pyinstaller PourInput-linux.spec --noconfirm
+        run: pyinstaller MousePro-linux.spec --noconfirm
 
       - name: Audit Linux bundle dependencies
         run: |
@@ -196,7 +196,7 @@ jobs:
           import stat
           import subprocess
 
-          bundle_root = os.path.join("dist", "PourInput")
+          bundle_root = os.path.join("dist", "MousePro")
           if not os.path.isdir(bundle_root):
               raise SystemExit(f"Missing bundle directory: {bundle_root}")
 
@@ -226,7 +226,7 @@ jobs:
               env["LD_LIBRARY_PATH"] = ld_library_path
 
           def should_audit(path: pathlib.Path) -> bool:
-              if path == bundle_root_path / "PourInput":
+              if path == bundle_root_path / "MousePro":
                   return True
               try:
                   relative = path.relative_to(pyside_root)
@@ -272,7 +272,7 @@ jobs:
       - name: Smoke test Linux bundle startup
         run: |
           set +e
-          QT_QPA_PLATFORM=offscreen timeout --kill-after=5s 15s ./dist/PourInput/PourInput
+          QT_QPA_PLATFORM=offscreen timeout --kill-after=5s 15s ./dist/MousePro/MousePro
           status=$?
           set -e
           if [ "$status" -ne 0 ] && [ "$status" -ne 124 ] && [ "$status" -ne 137 ]; then
@@ -281,17 +281,17 @@ jobs:
 
       - name: Add Linux permission helper
         run: |
-          cp packaging/linux/69-pourinput-logitech.rules dist/PourInput/
-          cp packaging/linux/install-linux-permissions.sh dist/PourInput/
-          chmod +x dist/PourInput/install-linux-permissions.sh
+          cp packaging/linux/69-mousepro-logitech.rules dist/MousePro/
+          cp packaging/linux/install-linux-permissions.sh dist/MousePro/
+          chmod +x dist/MousePro/install-linux-permissions.sh
 
       - name: Create archive
-        run: cd dist && zip -r -y ../PourInput-Linux.zip PourInput
+        run: cd dist && zip -r -y ../MousePro-Linux.zip MousePro
 
       - uses: actions/upload-artifact@v7
         with:
-          name: PourInput-Linux
-          path: PourInput-Linux.zip
+          name: MousePro-Linux
+          path: MousePro-Linux.zip
 
   release:
     if: (startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch') && github.ref != 'refs/tags/v1.3.5' && github.event.inputs.release_tag != 'v1.3.5'
@@ -307,12 +307,12 @@ jobs:
         run: |
           test "$(git rev-parse HEAD)" = "$(git rev-parse "refs/tags/$RELEASE_TAG^{commit}")"
           test -z "$(git status --porcelain)"
-          echo "POURINPUT_GIT_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          echo "MOUSEPRO_GIT_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
 
       - uses: actions/download-artifact@v8
         with:
-          pattern: PourInput-Windows*
-          path: PourInput-Windows
+          pattern: MousePro-Windows*
+          path: MousePro-Windows
           merge-multiple: true
 
       - uses: actions/setup-python@v6
@@ -322,18 +322,18 @@ jobs:
       - name: Generate update metadata
         run: |
           mkdir -p update-assets
-          cp "PourInput-Windows/${{ env.WINDOWS_ARCHIVE_NAME }}" update-assets/
+          cp "MousePro-Windows/${{ env.WINDOWS_ARCHIVE_NAME }}" update-assets/
           python tools/generate_update_manifest.py \
             --repo "${{ github.repository }}" \
             --tag "${{ env.RELEASE_TAG }}" \
-            --commit "${{ env.POURINPUT_GIT_COMMIT }}" \
+            --commit "${{ env.MOUSEPRO_GIT_COMMIT }}" \
             --asset-dir update-assets \
-            --output "pourinput-${{ env.RELEASE_TAG }}-update.json"
+            --output "mousepro-${{ env.RELEASE_TAG }}-update.json"
 
       - uses: actions/upload-artifact@v7
         with:
-          name: PourInput-Update-Metadata
-          path: pourinput-${{ env.RELEASE_TAG }}-update.json
+          name: MousePro-Update-Metadata
+          path: mousepro-${{ env.RELEASE_TAG }}-update.json
 
       - name: Create or update GitHub Release
         env:
@@ -345,8 +345,8 @@ jobs:
           fi
           gh release create "${{ env.RELEASE_TAG }}" \
             --repo "${{ github.repository }}" \
-            --title "PourInput ${{ env.RELEASE_TAG }}" \
+            --title "MousePro ${{ env.RELEASE_TAG }}" \
             --notes-file RELEASE_NOTES.md \
-            "PourInput-Windows/${{ env.WINDOWS_ARCHIVE_NAME }}" \
-            "PourInput-Windows/${{ env.WINDOWS_ARCHIVE_NAME }}.sha256" \
-            pourinput-${{ env.RELEASE_TAG }}-update.json
+            "MousePro-Windows/${{ env.WINDOWS_ARCHIVE_NAME }}" \
+            "MousePro-Windows/${{ env.WINDOWS_ARCHIVE_NAME }}.sha256" \
+            mousepro-${{ env.RELEASE_TAG }}-update.json

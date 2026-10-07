@@ -23,13 +23,13 @@ import zipfile
 from core.version import APP_EXECUTABLE_NAME, APP_NAME, APP_VERSION
 
 
-APP_ID = "io.github.pour_soi.pourinput"
+APP_ID = "io.github.szboboxing.mousepro"
 STABLE_CHANNEL = "stable"
 MANIFEST_SCHEMA_VERSION = 1
-DEFAULT_MANIFEST_NAME = "pourinput-v{version}-update.json"
+DEFAULT_MANIFEST_NAME = "mousepro-v{version}-update.json"
 DEFAULT_DOWNLOAD_TIMEOUT_SECONDS = 120.0
 MAX_ARCHIVE_UNCOMPRESSED_BYTES = 750 * 1024 * 1024
-_UPDATE_MANIFEST_URL_ENV = "POURINPUT_UPDATE_MANIFEST_URL"
+_UPDATE_MANIFEST_URL_ENV = "MOUSEPRO_UPDATE_MANIFEST_URL"
 _WINDOWS_SYNCHRONIZE = 0x00100000
 _WINDOWS_WAIT_OBJECT_0 = 0x00000000
 _WINDOWS_WAIT_TIMEOUT = 0x00000102
@@ -364,7 +364,7 @@ def fetch_json(url: str, *, timeout: float = 10.0):
         return json.loads(response.read().decode("utf-8-sig"))
 
 
-def manifest_url_for_release(tag: str, repo: str = "pour-soi/PourInput") -> str:
+def manifest_url_for_release(tag: str, repo: str = "szboboxing/MousePro") -> str:
     override = os.environ.get(_UPDATE_MANIFEST_URL_ENV, "").strip()
     if override:
         return override
@@ -374,7 +374,7 @@ def manifest_url_for_release(tag: str, repo: str = "pour-soi/PourInput") -> str:
 def fetch_update_manifest_for_release(
     tag: str,
     *,
-    repo: str = "pour-soi/PourInput",
+    repo: str = "szboboxing/MousePro",
     target_platform: str | None = None,
     timeout: float = 10.0,
     highest_trusted_build: int | None = None,
@@ -544,14 +544,14 @@ def same_volume_windows_stage_dir(
 def _probe_directory_writable(directory: Path) -> bool:
     try:
         handle, marker = tempfile.mkstemp(
-            prefix=".pourinput-update-write-test-",
+            prefix=".mousepro-update-write-test-",
             dir=str(directory),
         )
     except OSError:
         return False
     try:
         with os.fdopen(handle, "wb") as marker_file:
-            marker_file.write(b"PourInput")
+            marker_file.write(b"MousePro")
             marker_file.flush()
             os.fsync(marker_file.fileno())
     except OSError:
@@ -583,8 +583,8 @@ def locate_runtime(
     is_frozen = bool(getattr(sys, "frozen", False) if frozen is None else frozen)
     if app_data_dir is None and (sys_platform or sys.platform).startswith("win"):
         base = os.environ.get("LOCALAPPDATA") or str(Path.home() / "AppData" / "Local")
-        app_data_dir = Path(base) / "PourInput" / "updates"
-    data_dir = Path(app_data_dir or Path.home() / ".PourInput" / "updates").resolve()
+        app_data_dir = Path(base) / "MousePro" / "updates"
+    data_dir = Path(app_data_dir or Path.home() / ".MousePro" / "updates").resolve()
     key = platform_key(system)
     if not is_frozen:
         return RuntimeLocation(exe, exe.parent, data_dir, False, key, False, "source run")
@@ -746,7 +746,7 @@ def stage_windows_update_helper(
     if not runtime_dir.is_dir():
         raise UpdateInstallError("missing_helper_runtime", "Update helper runtime is missing.")
     target_dir = Path(helper_dir).resolve()
-    target_root = target_dir / "PourInputUpdateHelper"
+    target_root = target_dir / "MouseProUpdateHelper"
     try:
         target_root.relative_to(source.parent)
     except ValueError:
@@ -790,7 +790,7 @@ def launch_windows_update_helper(
     env = dict(os.environ)
     env["PYINSTALLER_RESET_ENVIRONMENT"] = "1"
     (runner or ProcessRunner()).popen(
-        [exe, "--pourinput-apply-update", str(plan_path)],
+        [exe, "--mousepro-apply-update", str(plan_path)],
         cwd=str(Path(exe).resolve().parent),
         env=env,
     )
@@ -1068,7 +1068,7 @@ def prepare_downloaded_asset(
     cancel_event=None,
     progress_callback=None,
 ) -> Path:
-    root = Path(download_dir or tempfile.mkdtemp(prefix="pourinput-update-download-"))
+    root = Path(download_dir or tempfile.mkdtemp(prefix="mousepro-update-download-"))
     target = root / asset.name
     download_to_file(
         asset.url,

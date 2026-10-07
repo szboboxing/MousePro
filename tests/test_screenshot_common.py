@@ -62,7 +62,7 @@ class ScreenshotOutputTests(unittest.TestCase):
 
             directory = screenshots_dir(home=home)
 
-            self.assertEqual(directory, pictures / "PourInput Screenshots")
+            self.assertEqual(directory, pictures / "MousePro Screenshots")
             self.assertTrue(directory.is_dir())
 
     def test_pil_image_to_qimage_preserves_dimensions(self):

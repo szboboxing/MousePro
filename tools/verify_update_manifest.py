@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify PourInput update metadata for the selected platform."""
+"""Verify MousePro update metadata for the selected platform."""
 
 from __future__ import annotations
 

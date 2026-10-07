@@ -27,7 +27,7 @@ class ScreenshotControllerStartupPolicyTests(unittest.TestCase):
         source = inspect.getsource(main_qml.main)
 
         self.assertIn("from ui.windows_screenshot import WindowsScreenshotController", source)
-        self.assertIn("app._POURINPUT_screenshot_controller = screenshot_controller", source)
+        self.assertIn("app._MOUSEPRO_screenshot_controller = screenshot_controller", source)
         self.assertIn("set_screenshot_action_handler(screenshot_controller.request_action)", source)
 
 
@@ -64,11 +64,11 @@ class EngineStartupPolicyTests(unittest.TestCase):
         engine.start.assert_called_once_with()
         messages = [str(item.args[0]) for item in log.call_args_list]
         self.assertIn(
-            "[PourInput] Engine start failed -- remapping is inactive",
+            "[MousePro] Engine start failed -- remapping is inactive",
             messages,
         )
         self.assertNotIn(
-            "[PourInput] Engine started -- remapping is active",
+            "[MousePro] Engine started -- remapping is active",
             messages,
         )
 
@@ -133,7 +133,7 @@ class LanguageSwitchingStartupPolicyTests(unittest.TestCase):
     def test_startup_restores_and_persists_locale_manager_language(self):
         source = inspect.getsource(main_qml.main)
 
-        self.assertIn('initial_lang = cfg_settings.get("language", "en")', source)
+        self.assertIn('initial_lang = cfg_settings.get("language", "zh_CN")', source)
         self.assertIn("LocaleManager(language=initial_lang)", source)
         self.assertIn("backend = Backend(engine, root_dir=ROOT, locale_manager=locale_mgr)", source)
         self.assertIn(

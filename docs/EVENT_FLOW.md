@@ -1,4 +1,4 @@
-# PourInput Event Flow
+# MousePro Event Flow
 
 This reference follows events through the current implementation. Component ownership is summarized in [ARCHITECTURE.md](ARCHITECTURE.md), while persistent and transient data are separated in [STATE_MANAGEMENT.md](STATE_MANAGEMENT.md).
 

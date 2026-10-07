@@ -156,8 +156,8 @@ def linux_permission_status_message(report: LinuxPermissionReport | None) -> str
     if report is None or not report.has_issue:
         return ""
     return (
-        "Linux permissions may block PourInput. Run "
-        f"{INSTALL_HELPER}, reconnect the mouse, then restart PourInput."
+        "Linux permissions may block MousePro. Run "
+        f"{INSTALL_HELPER}, reconnect the mouse, then restart MousePro."
     )
 
 

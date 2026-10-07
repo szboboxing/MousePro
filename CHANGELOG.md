@@ -1,10 +1,22 @@
 # Changelog
 
-All notable changes to PourInput are documented here.
+All notable changes to MousePro are documented here.
 
 This project uses Semantic Versioning.
 
 ## Unreleased
+
+## 鼠标pro V1.0 - 2026-10-06
+
+### Added
+- Fork 自 PourInput v1.4.3，产品品牌独立为鼠标Pro MousePro（维护者 szboboxing）；版本号重置为 1.0.0。
+- **右键组合手势**（Windows）：按住右键 + 滚轮上 = 复制；按住右键 + 滚轮下 = 增强粘贴；按住右键 + 已配置侧键 = 系统截图；每次按住右键最多触发一个动作，未触发则原样弹出右键菜单。
+- **增强粘贴**（Windows）：在当前激活的资源管理器或桌面新建文件夹并以剪贴板内容命名。
+- **系统工具页**（Windows）：计算器、默认浏览器、媒体播放器、鼠标指针大小设置（Win11 辅助功能-鼠标指针与触控 / Win10 调整鼠标和光标大小）、亮度降/升（WMI→DDC/CI）、对比度降/升（DDC/CI）。
+- **鼠标按键测试页**：7 类输入（左/右/中/滚轮上/下/X1/X2）高亮与计数，只读透传；支持侧键重新确认并保存为截图侧键。
+- **使用统计页**：本次运行的按键次数、滚轮次数、移动像素距离与复制/增强粘贴/截图成功次数，可清零。
+- 上述增强功能仅在 Windows 显示与启用，macOS/Linux 自动隐藏导航与页面。
+- 新增单元测试 56 项，全量套件 953 项。
 
 ## v1.4.3 - 2026-09-26
 

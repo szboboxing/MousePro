@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate PourInput update metadata from release assets."""
+"""Generate MousePro update metadata from release assets."""
 
 from __future__ import annotations
 
@@ -23,11 +23,11 @@ from core.update_installer import (
 
 
 _ASSET_PLATFORM_KEYS = {
-    "PourInput-Windows.zip": "windows-x64",
-    "PourInput-macOS.zip": "macos-arm64",
-    "PourInput-macOS-intel.zip": "macos-x86_64",
-    "PourInput-Linux.zip": "linux-x64",
-    "PourInput-Windows-arm64.zip": "windows-arm64",
+    "MousePro-Windows.zip": "windows-x64",
+    "MousePro-macOS.zip": "macos-arm64",
+    "MousePro-macOS-intel.zip": "macos-x86_64",
+    "MousePro-Linux.zip": "linux-x64",
+    "MousePro-Windows-arm64.zip": "windows-arm64",
 }
 
 
@@ -39,7 +39,7 @@ def _asset_platform_keys(tag: str) -> dict[str, str]:
     version = _version_from_tag(tag)
     return {
         **_ASSET_PLATFORM_KEYS,
-        f"PourInput-v{version}-Windows.zip": "windows-x64",
+        f"MousePro-v{version}-Windows.zip": "windows-x64",
     }
 
 
@@ -58,7 +58,7 @@ def build_payload(args) -> dict:
             "sha256": sha256_file(path),
         }
     if not assets:
-        raise SystemExit(f"No known PourInput assets found in {asset_dir}")
+        raise SystemExit(f"No known MousePro assets found in {asset_dir}")
     expires_at = (
         datetime.now(timezone.utc) + timedelta(days=int(args.expires_days))
     ).replace(microsecond=0)

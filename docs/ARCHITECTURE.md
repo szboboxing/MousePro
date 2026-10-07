@@ -1,8 +1,8 @@
-# PourInput Architecture
+# MousePro Architecture
 
 This document describes the architecture implemented in the current repository. It is an engineering reference, not a roadmap. For detailed flows and ownership boundaries, follow the links in [Related documentation](#related-documentation).
 
-PourInput owns its runtime, configuration, input pipeline, packaging, and update infrastructure. It does not load or require another application's executable, process, service, configuration, or installation.
+MousePro owns its runtime, configuration, input pipeline, packaging, and update infrastructure. It does not load or require another application's executable, process, service, configuration, or installation.
 
 ## Contents
 
@@ -19,7 +19,7 @@ PourInput owns its runtime, configuration, input pipeline, packaging, and update
 
 ## System overview
 
-PourInput is a PySide6 desktop application with a QML presentation layer and a Python runtime. `main_qml.py` is the composition root. It creates the core `Engine`, the QML-facing `Backend`, platform screenshot integration, the QML engine, and the system tray.
+MousePro is a PySide6 desktop application with a QML presentation layer and a Python runtime. `main_qml.py` is the composition root. It creates the core `Engine`, the QML-facing `Backend`, platform screenshot integration, the QML engine, and the system tray.
 
 ```mermaid
 flowchart LR
@@ -114,9 +114,9 @@ The QML layer does not import Python modules directly. Image providers registere
 
 `core/config.py` stores a single JSON document at the platform configuration location:
 
-- Windows: `%APPDATA%\PourInput\config.json`
-- macOS: `~/Library/Application Support/PourInput/config.json`
-- Linux: `$XDG_CONFIG_HOME/PourInput/config.json`, defaulting to `~/.config/PourInput/config.json`
+- Windows: `%APPDATA%\MousePro\config.json`
+- macOS: `~/Library/Application Support/MousePro/config.json`
+- Linux: `$XDG_CONFIG_HOME/MousePro/config.json`, defaulting to `~/.config/MousePro/config.json`
 
 Loading creates the directory, reads JSON when present, migrates older schemas to version 11, merges missing defaults, and repairs type mismatches for default-shaped fields. An unreadable configuration falls back to an in-memory deep copy of defaults. Saving uses a temporary file, flush plus `fsync`, and atomic replacement; non-Windows temporary files receive user-only permissions.
 

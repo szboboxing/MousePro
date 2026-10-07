@@ -1,23 +1,41 @@
-# PourInput v1.4.3 — Chapter navigation / 章节导航
+# MousePro v1.0.0 — 鼠标 Pro 首个独立版本 / First independent release
 
 ## 中文
 
-PourInput 是鼠标自定义软件。本次 Windows 更新完善附加的阅读功能，保留现有 Generic/MX 映射和设备增强功能。
+鼠标 Pro（MousePro）基于开源项目 PourInput v1.4.3（MIT）独立演进，在其完整的鼠标按键映射、应用配置、罗技 MX 增强、阅读模式之上，新增一组 Windows 鼠标增强能力，并将界面默认语言设为简体中文。
 
-- 隐藏键改为按一下隐藏、松开保持隐藏、再按一下显示。隐藏期间自动阅读暂停，显示后继续。
-- 章节目录支持 EPUB 内置目录、TXT 章节标题。没有明确标题时，尝试根据短行与空行推测；推测结果会标注并要求确认。
-- 章节跳转从标题开始，标题独占一行，不再带上上一章的尾句。字号和浮窗大小保持不变。
-- 章节信息与阅读进度独立保存；重启后保留位置，自动阅读默认暂停。旧版导入的书籍可能需要重新导入以获得完整目录。
+**新增功能（Windows）**
 
-用户已验证章节跳转及重启位置恢复；自动检查覆盖隐藏状态、自动阅读、章节识别和鼠标路由。推测目录可能不完整或误判。请退出旧版托盘进程，将 ZIP 完整解压到短路径后运行 PourInput/PourInput.exe。本次仅发布 Windows，程序未签名。
+- **右键组合手势**：按住鼠标右键不放，滚轮上滑立即复制，滚轮下滑执行增强粘贴，按下已确认的侧键调用系统截图（Win+Shift+S）。每次按住右键最多执行一个动作；未触发任何动作时松开右键，原样弹出系统右键菜单。
+- **增强粘贴**：在当前激活的文件资源管理器窗口或桌面新建文件夹，并以剪贴板内容命名。
+- **系统工具页**：一键启动计算器、默认浏览器、媒体播放器；一键打开鼠标指针大小设置（Windows 11 打开「设置 → 辅助功能 → 鼠标指针与触控」，Windows 10 打开「调整鼠标和光标大小」）；亮度与对比度降低/提高（内置屏幕走 WMI，外接显示器走 DDC/CI，硬件不支持时提示原因）。
+- **鼠标按键测试页**：左键、右键、中键、滚轮上/下、X1/X2 侧键共 7 类输入实时高亮与计数，测试期间只读透传、不触发任何动作；支持侧键重新确认并保存为截图手势侧键。
+- **使用统计页**：统计本次运行的各按键次数、滚轮次数、鼠标移动像素距离，以及复制、增强粘贴、系统截图的成功次数，可随时清零。
+- 动作选择面板中的「MousePro 增强」分类采用高亮样式，便于快速找到新动作；这些动作也可单独绑定到任意鼠标按键的单击或长按。
+
+**其他**
+
+- 首次启动默认简体中文；通用设置中仍可切换 English。
+- 增强功能仅在 Windows 显示与启用，macOS/Linux 构建保留原有功能。
+- 953 项自动化测试，Windows 包由 GitHub Actions 在 windows-latest 上构建并通过启动冒烟测试。
+- 程序尚未签名。请从系统托盘退出旧版本，将 ZIP 完整解压到较短路径后运行 MousePro/MousePro.exe。
 
 ## English
 
-PourInput customizes mouse controls. This Windows update improves its optional reader while preserving Generic/MX mappings and device enhancements.
+MousePro is an independent evolution of the open-source PourInput v1.4.3 (MIT). It keeps everything from the upstream — per-button click/long-press mappings, per-app profiles, Logitech MX enhancements, and reading mode — and adds a set of Windows mouse enhancements, with Simplified Chinese as the default UI language.
 
-- Press once to hide, release keeps the panel hidden, and press again to show. Auto-reading pauses while hidden and resumes when shown.
-- Navigate EPUB contents and recognized TXT chapter headings. When explicit headings are absent, layout-based suggestions are labeled and require confirmation.
-- Chapter jumps start at the title on its own line, without the previous chapter's tail. Panel and font size remain fixed.
-- Chapter metadata and reading progress remain in the independent reader store. Restart restores position with playback paused. Older imports may need reimporting for accurate contents.
+**New (Windows)**
 
-The user verified chapter jumps and restart position recovery; automated checks cover visibility, auto-reading, chapter recognition, and mouse routing. Suggested chapters may be incomplete or incorrect. Quit the old tray process, fully extract the ZIP to a short path, then run PourInput/PourInput.exe. Windows only; unsigned executable.
+- **Right-button combo gestures**: hold the right mouse button, then scroll up to copy, scroll down for enhanced paste, or press a confirmed side button for the system screenshot (Win+Shift+S). At most one action fires per right-button hold; releasing without a gesture shows the native context menu as usual.
+- **Enhanced paste**: creates a new folder in the active File Explorer window (or on the desktop) and names it with the current clipboard content.
+- **System Tools page**: launch Calculator, the default browser, or the media player; open mouse pointer size settings directly (Windows 11: Settings → Accessibility → Mouse pointer and touch; Windows 10: Change mouse pointer and cursor size); decrease/increase brightness and contrast (WMI for built-in screens, DDC/CI for external monitors, with a clear message when unsupported).
+- **Button test page**: live highlight and counters for seven inputs (left, right, middle, wheel up/down, X1/X2). Inputs are passed through read-only — no actions fire — and side buttons can be reconfirmed and saved as screenshot gesture buttons.
+- **Usage stats page**: per-button clicks, wheel notches, pointer travel distance, and successful copy / enhanced paste / screenshot counts for the current session, with one-click reset.
+- The "MousePro" action group in the action picker is highlighted so the new actions are easy to spot; each can also be bound to any button's click or long press.
+
+**Other**
+
+- First launch defaults to Simplified Chinese; English remains available in general settings.
+- The enhancements are shown and enabled on Windows only; macOS/Linux builds keep the existing feature set.
+- 953 automated tests; the Windows archive is built on GitHub Actions windows-latest and passes a packaged-app startup smoke test.
+- The executable is unsigned. Quit any previous tray instance, fully extract the ZIP to a short path, then run MousePro/MousePro.exe.

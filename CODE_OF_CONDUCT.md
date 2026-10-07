@@ -1,6 +1,6 @@
 # Code of Conduct
 
-PourInput should be a welcoming project for users, testers, and contributors.
+MousePro should be a welcoming project for users, testers, and contributors.
 
 ## Expected Behavior
 

@@ -1,4 +1,4 @@
-# PourInput Project Structure
+# MousePro Project Structure
 
 This document maps the tracked repository structure. Generated local folders such as `.venv`, `build`, `dist`, `release`, caches, and ad hoc packaged archives are intentionally excluded.
 
@@ -15,7 +15,7 @@ This document maps the tracked repository structure. Generated local folders suc
 ## Directory tree
 
 ```text
-PourInput/
+MousePro/
 ├── .github/
 │   ├── ISSUE_TEMPLATE/
 │   └── workflows/
@@ -32,9 +32,9 @@ PourInput/
 │   └── qml/
 ├── main_qml.py
 ├── build_support.py
-├── PourInput.spec
-├── PourInput-mac.spec
-├── PourInput-linux.spec
+├── MousePro.spec
+├── MousePro-mac.spec
+├── MousePro-linux.spec
 ├── build.bat
 ├── build_macos_app.sh
 ├── requirements.txt
@@ -47,7 +47,7 @@ PourInput/
 |---|---|---|---|
 | `main_qml.py` | Runtime composition root and desktop lifecycle | `core`, `ui`, PySide6 | `main()` and documented CLI flags |
 | `build_support.py` | Build-time metadata/resource helpers | Python stdlib and repository assets | Functions consumed by specs/tests |
-| `PourInput*.spec` | PyInstaller definitions per platform | Source packages, images, QML, build resources | PyInstaller build inputs |
+| `MousePro*.spec` | PyInstaller definitions per platform | Source packages, images, QML, build resources | PyInstaller build inputs |
 | `build.bat`, `build_macos_app.sh` | Local platform build workflows | Python/PyInstaller/toolchain | Developer command surface |
 | `requirements.txt` | Runtime/development Python dependencies | Package indexes | Installation input |
 

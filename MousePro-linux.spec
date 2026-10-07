@@ -3,9 +3,9 @@
 PyInstaller spec for building a portable Linux distribution.
 
 Run:
-    python3 -m PyInstaller PourInput-linux.spec --noconfirm
+    python3 -m PyInstaller MousePro-linux.spec --noconfirm
 
-Output: dist/PourInput/  (directory with PourInput executable + dependencies)
+Output: dist/MousePro/  (directory with MousePro executable + dependencies)
 """
 
 import os
@@ -19,7 +19,7 @@ if ROOT not in sys.path:
 
 from build_support import should_keep_linux_qt_asset
 
-BUILD_INFO_PATH = os.path.join(ROOT, "build", "POURINPUT_build_info.json")
+BUILD_INFO_PATH = os.path.join(ROOT, "build", "MOUSEPRO_build_info.json")
 
 
 def _load_app_version() -> str:
@@ -60,8 +60,8 @@ def _git_dirty():
 
 
 def _write_build_info(version: str) -> str:
-    commit = os.environ.get("POURINPUT_GIT_COMMIT", "").strip() or _run_git(["rev-parse", "HEAD"])
-    dirty_env = os.environ.get("POURINPUT_GIT_DIRTY")
+    commit = os.environ.get("MOUSEPRO_GIT_COMMIT", "").strip() or _run_git(["rev-parse", "HEAD"])
+    dirty_env = os.environ.get("MOUSEPRO_GIT_DIRTY")
     if dirty_env:
         dirty = dirty_env.strip().lower() in {"1", "true", "yes", "on"}
     else:
@@ -91,7 +91,7 @@ a = Analysis(
         (os.path.join(ROOT, "ui", "qml"), os.path.join("ui", "qml")),
         (os.path.join(ROOT, "images"), "images"),
         (
-            os.path.join(ROOT, "packaging", "linux", "69-pourinput-logitech.rules"),
+            os.path.join(ROOT, "packaging", "linux", "69-mousepro-logitech.rules"),
             "linux",
         ),
         (
@@ -99,7 +99,7 @@ a = Analysis(
             "linux",
         ),
         (
-            os.path.join(ROOT, "packaging", "linux", "io.github.pour_soi.pourinput.desktop.in"),
+            os.path.join(ROOT, "packaging", "linux", "io.github.szboboxing.mousepro.desktop.in"),
             "linux",
         ),
         (
@@ -198,7 +198,7 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name="PourInput",
+    name="MousePro",
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -214,5 +214,5 @@ coll = COLLECT(
     strip=False,
     upx=False,
     upx_exclude=[],
-    name="PourInput",
+    name="MousePro",
 )

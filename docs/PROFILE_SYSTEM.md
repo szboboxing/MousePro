@@ -1,4 +1,4 @@
-# PourInput Profile System
+# MousePro Profile System
 
 Profiles provide per-application mouse mappings. This document describes the implemented model and its limits. Mapping execution is covered by [MOUSE_MAPPING_SYSTEM.md](MOUSE_MAPPING_SYSTEM.md).
 

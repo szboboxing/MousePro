@@ -43,6 +43,10 @@ ApplicationWindow {
         root.contentItem.forceActiveFocus(Qt.OtherFocusReason)
     }
 
+    function showToast(msg) {
+        toast.show(msg)
+    }
+
     color: theme.bg
 
     Material.theme: darkMode ? Material.Dark : Material.Light
@@ -98,11 +102,20 @@ ApplicationWindow {
                     Item { width: 1; height: 16 }
 
                     Repeater {
-                        model: [
-                            { icon: "mouse-simple", tipKey: "nav.mouse_profiles", page: 0 },
-                            { icon: "sliders-horizontal", tipKey: "nav.point_scroll", page: 1 },
-                            { icon: "book-open", tipKey: "nav.reading", page: 2 }
-                        ]
+                        model: {
+                            var pages = [
+                                { icon: "mouse-simple", tipKey: "nav.mouse_profiles", page: 0 },
+                                { icon: "sliders-horizontal", tipKey: "nav.point_scroll", page: 1 },
+                                { icon: "book-open", tipKey: "nav.reading", page: 2 }
+                            ]
+                            if (backend.enhancementsSupported) {
+                                pages.push({ icon: "gesture", tipKey: "nav.mousepro_gesture", page: 3 })
+                                pages.push({ icon: "tools", tipKey: "nav.mousepro_tools", page: 4 })
+                                pages.push({ icon: "test", tipKey: "nav.mousepro_test", page: 5 })
+                                pages.push({ icon: "stats", tipKey: "nav.mousepro_stats", page: 6 })
+                            }
+                            return pages
+                        }
 
                         delegate: FocusScope {
                             id: navItem
@@ -270,6 +283,34 @@ ApplicationWindow {
             ReadingPage {
                 controller: reader
                 theme: root.theme
+            }
+            Loader {
+                id: gesturePageLoader
+                active: backend.enhancementsSupported
+                        && (root.currentPage === 3 || item)
+                source: "GesturePage.qml"
+                onItemChanged: if (item) item.toastRequested.connect(root.showToast)
+            }
+            Loader {
+                id: toolsPageLoader
+                active: backend.enhancementsSupported
+                        && (root.currentPage === 4 || item)
+                source: "ToolsPage.qml"
+                onItemChanged: if (item) item.toastRequested.connect(root.showToast)
+            }
+            Loader {
+                id: testPageLoader
+                active: backend.enhancementsSupported
+                        && (root.currentPage === 5 || item)
+                source: "TestPage.qml"
+                onItemChanged: if (item) item.toastRequested.connect(root.showToast)
+            }
+            Loader {
+                id: statsPageLoader
+                active: backend.enhancementsSupported
+                        && (root.currentPage === 6 || item)
+                source: "StatsPage.qml"
+                onItemChanged: if (item) item.toastRequested.connect(root.showToast)
             }
         }
     }

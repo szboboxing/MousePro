@@ -30,12 +30,20 @@ Item {
             contentItem: Text {
                 leftPadding: 10; rightPadding: 10
                 text: (lm.strings, lm.trAction(modelData ? modelData.label : ""))
-                font { family: uiState.fontFamily; pixelSize: 11 }
-                color: highlighted ? mousePage.theme.accent : mousePage.theme.textPrimary
+                font { family: uiState.fontFamily; pixelSize: 11; bold: modelData && modelData.category === "MousePro" }
+                color: highlighted
+                       ? mousePage.theme.accent
+                       : (modelData && modelData.category === "MousePro")
+                         ? mousePage.theme.accent
+                         : mousePage.theme.textPrimary
                 verticalAlignment: Text.AlignVCenter
             }
             background: Rectangle {
-                color: highlighted ? Qt.rgba(0.36, 0.56, 0.95, 0.1) : "transparent"
+                color: highlighted
+                         ? Qt.rgba(0.36, 0.56, 0.95, 0.1)
+                         : (modelData && modelData.category === "MousePro")
+                           ? Qt.rgba(0.36, 0.56, 0.95, 0.05)
+                           : "transparent"
             }
         }
     }
@@ -1709,12 +1717,25 @@ Item {
                                         width: parent.width
                                         spacing: 8
 
-                                        Text {
-                                            text: { var _lang = lm.strings; return lm.trCategory(modelData.category) }
-                                            font { family: uiState.fontFamily; pixelSize: 11;
-                                                   capitalization: Font.AllUppercase;
-                                                   letterSpacing: 1 }
-                                            color: theme.textDim
+                                        Rectangle {
+                                            width: parent.width
+                                            height: modelData.category === "MousePro" ? 36 : 28
+                                            radius: Theme.radiusSmall
+                                            color: modelData.category === "MousePro"
+                                                   ? theme.accentDim
+                                                   : "transparent"
+                                            border.width: modelData.category === "MousePro" ? 1 : 0
+                                            border.color: theme.accent
+
+                                            Text {
+                                                anchors.centerIn: parent
+                                                text: { var _lang = lm.strings; return lm.trCategory(modelData.category) }
+                                                font { family: uiState.fontFamily; pixelSize: modelData.category === "MousePro" ? 12 : 11;
+                                                       capitalization: Font.AllUppercase;
+                                                       letterSpacing: 1;
+                                                       bold: modelData.category === "MousePro" }
+                                                color: modelData.category === "MousePro" ? theme.accent : theme.textDim
+                                            }
                                         }
 
                                         Flow {
@@ -1729,6 +1750,7 @@ Item {
                                                     isCurrent: modelData.id === "__custom__"
                                                                ? isCustomAction(selectedActionId)
                                                                : modelData.id === selectedActionId
+                                                    isMousePro: modelData.category === "MousePro"
                                                     onPicked: function(aid) {
                                                         if (aid === "__custom__") {
                                                             keyCaptureDialog.open(selectedProfile, selectedButton)

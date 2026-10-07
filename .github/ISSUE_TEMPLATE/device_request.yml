@@ -1,16 +1,16 @@
 name: Device Support Request
-description: Request support for a Logitech mouse not yet supported by PourInput
+description: Request support for a Logitech mouse not yet supported by MousePro
 title: "[Device] "
 labels: ["device-request"]
 body:
   - type: markdown
     attributes:
       value: |
-        Want PourInput to support your Logitech mouse? The device info dump is the
+        Want MousePro to support your Logitech mouse? The device info dump is the
         single most useful thing you can provide.
 
         **Before opening this issue**, check
-        [CONTRIBUTING_DEVICES.md](https://github.com/pour-soi/PourInput/blob/main/CONTRIBUTING_DEVICES.md)
+        [CONTRIBUTING_DEVICES.md](https://github.com/szboboxing/MousePro/blob/main/CONTRIBUTING_DEVICES.md)
         for the full guide on how device support works. If you are able to
         submit a PR yourself, even better!
 
@@ -29,7 +29,7 @@ body:
     attributes:
       label: Product ID (if known)
       description: >
-        The USB/Bluetooth Product ID (PID). If PourInput showed something like
+        The USB/Bluetooth Product ID (PID). If MousePro showed something like
         "Logitech PID 0xB0XX", paste that value. You can also find it in the
         device info JSON under `product_id`.
       placeholder: "e.g. 0xB0XX"
@@ -49,17 +49,17 @@ body:
       required: true
 
   - type: dropdown
-    id: pourinput-detection
+    id: mousepro-detection
     attributes:
-      label: Does PourInput detect the device at all?
+      label: Does MousePro detect the device at all?
       description: >
-        When you connect the mouse and open PourInput, does the UI show a device
+        When you connect the mouse and open MousePro, does the UI show a device
         name or "Not Connected"?
       options:
         - "Yes, it shows the correct model name"
         - "Yes, but it shows a generic name (e.g. 'Logitech PID 0xXXXX')"
-        - "No, PourInput says 'Not Connected'"
-        - "I have not tried connecting it to PourInput yet"
+        - "No, MousePro says 'Not Connected'"
+        - "I have not tried connecting it to MousePro yet"
     validations:
       required: true
 
@@ -69,7 +69,7 @@ body:
       label: Device info JSON
       description: >
         This is the most important piece of information for adding device
-        support. Even if PourInput does not fully support your mouse, it may still
+        support. Even if MousePro does not fully support your mouse, it may still
         detect and probe it.
 
 
@@ -77,14 +77,14 @@ body:
 
         1. Connect your Logitech mouse via Bluetooth or USB receiver
 
-        2. Open PourInput and go to the **Mouse** page
+        2. Open MousePro and go to the **Mouse** page
 
         3. Click **Copy device info** (the clipboard button next to "Help us support your mouse")
 
         4. Paste the JSON below
 
 
-        If PourInput does not detect your device at all, skip this field and
+        If MousePro does not detect your device at all, skip this field and
         mention that in the description.
       render: json
       placeholder: "Paste the JSON from 'Copy device info' here"
@@ -96,7 +96,7 @@ body:
     attributes:
       label: Physical buttons on your mouse
       description: >
-        Describe the buttons your mouse has and which ones you would like PourInput
+        Describe the buttons your mouse has and which ones you would like MousePro
         to support. Photos of the mouse are very welcome!
       placeholder: |
         My mouse has:
@@ -112,7 +112,7 @@ body:
   - type: textarea
     id: desired-features
     attributes:
-      label: What features would you like PourInput to support for this device?
+      label: What features would you like MousePro to support for this device?
       description: >
         Beyond basic detection, what do you want? Button remapping, gesture
         swipes, DPI control, Smart Shift, per-app profiles, an interactive

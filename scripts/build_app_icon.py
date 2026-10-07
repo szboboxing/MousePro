@@ -13,17 +13,17 @@ Outputs (regenerated in place)
 ``images/AppIcon.icns``
     Multi-resolution Apple Icon Image (.icns) for the macOS bundle:
     16, 32, 128, 256, 512 + their ``@2x`` Retina variants, all derived
-    by Lanczos-down-sampling the master. Consumed by ``PourInput-mac.spec``
+    by Lanczos-down-sampling the master. Consumed by ``MousePro-mac.spec``
     via ``CFBundleIconFile``.
 
 ``images/logo.ico``
     Multi-resolution Windows icon (.ico) at 16, 24, 32, 48, 64, 128, 256.
     The squircle is re-fit to ~96% of the canvas so the 16 px
     representation stays legible -- Windows taskbars do not allocate
-    macOS-style gutter for drop shadows. Consumed by ``PourInput.spec`` on
+    macOS-style gutter for drop shadows. Consumed by ``MousePro.spec`` on
     the Windows build path.
 
-``packaging/linux/icons/hicolor/<size>x<size>/apps/io.github.pour_soi.pourinput.png``
+``packaging/linux/icons/hicolor/<size>x<size>/apps/io.github.szboboxing.mousepro.png``
     Linux icon-theme PNG ladder for portable zip desktop integration.
     Uses the same fitted icon body as the Windows asset so small KDE
     taskbar entries stay legible.
@@ -60,7 +60,7 @@ OUT_LINUX_HICOLOR = ROOT / "packaging" / "linux" / "icons" / "hicolor"
 
 MAC_CANVAS = 1024
 WIN_CANVAS = 1024
-LINUX_ICON_NAME = "io.github.pour_soi.pourinput"
+LINUX_ICON_NAME = "io.github.szboboxing.mousepro"
 # Apple icon grid: 824 squircle on 1024 canvas (10% gutter each side).
 # Microsoft Learn / Linux taskbars: no fixed gutter; 96% fill keeps the
 # 16 px tile readable.
@@ -140,8 +140,8 @@ def build_icns(
     master_path: Path = MASTER,
     out_path: Path = OUT_ICNS,
 ) -> None:
-    with tempfile.TemporaryDirectory(prefix="pourinput-iconset-") as tmp:
-        iconset = Path(tmp) / "PourInput.iconset"
+    with tempfile.TemporaryDirectory(prefix="mousepro-iconset-") as tmp:
+        iconset = Path(tmp) / "MousePro.iconset"
         iconset.mkdir()
         # Sorted iteration so that every CI run produces the same iconset
         # directory walk order regardless of filesystem enumeration. The

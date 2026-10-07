@@ -1,8 +1,8 @@
 # -*- mode: python ; coding: utf-8 -*-
 """
-PyInstaller spec file for PourInput
-Produces a single-directory portable build in  dist/PourInput/
-Run:  pyinstaller PourInput.spec
+PyInstaller spec file for MousePro
+Produces a single-directory portable build in  dist/MousePro/
+Run:  pyinstaller MousePro.spec
 """
 
 import os
@@ -15,11 +15,11 @@ import PySide6
 block_cipher = None
 ROOT = os.path.abspath(".")
 PYSIDE6_DIR = os.path.dirname(PySide6.__file__)
-BUILD_INFO_PATH = os.path.join(ROOT, "build", "POURINPUT_build_info.json")
-VERSION_INFO_PATH = os.path.join(ROOT, "build", "POURINPUT_version_info.txt")
-APP_NAME = "PourInput"
-APP_EXECUTABLE_NAME = "PourInput.exe"
-APP_MAINTAINER = "pour-soi"
+BUILD_INFO_PATH = os.path.join(ROOT, "build", "MOUSEPRO_build_info.json")
+VERSION_INFO_PATH = os.path.join(ROOT, "build", "MOUSEPRO_version_info.txt")
+APP_NAME = "MousePro"
+APP_EXECUTABLE_NAME = "MousePro.exe"
+APP_MAINTAINER = "szboboxing"
 
 
 def _load_app_version() -> str:
@@ -77,11 +77,11 @@ def _git_dirty():
 
 def _write_build_info(version: str) -> str:
     commit = (
-        os.environ.get("POURINPUT_GIT_COMMIT", "").strip()
+        os.environ.get("MOUSEPRO_GIT_COMMIT", "").strip()
         or _run_git(["rev-parse", "HEAD"])
         or _read_git_head()
     )
-    dirty_env = os.environ.get("POURINPUT_GIT_DIRTY")
+    dirty_env = os.environ.get("MOUSEPRO_GIT_DIRTY")
     if dirty_env:
         dirty = dirty_env.strip().lower() in {"1", "true", "yes", "on"}
     else:
@@ -138,7 +138,7 @@ VSVersionInfo(
           StringStruct('CompanyName', '{APP_MAINTAINER}'),
           StringStruct('FileDescription', '{APP_NAME}'),
           StringStruct('FileVersion', '{file_version_text}'),
-          StringStruct('InternalName', 'PourInput'),
+          StringStruct('InternalName', 'MousePro'),
           StringStruct('Maintainer', '{APP_MAINTAINER}'),
           StringStruct('OriginalFilename', '{APP_EXECUTABLE_NAME}'),
           StringStruct('ProductName', '{APP_NAME}'),
@@ -312,7 +312,7 @@ exe = EXE(
     a.scripts,
     [],                     # not one-file (faster startup, easier debugging)
     exclude_binaries=True,
-    name="PourInput",
+    name="MousePro",
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -331,14 +331,14 @@ coll = COLLECT(
     strip=False,
     upx=False,              # UPX OFF — faster cold start
     upx_exclude=[],
-    name="PourInput",
+    name="MousePro",
 )
 
 # ── Post-build cleanup: remove Qt QML/plugin dirs we don't need ──────────
 # PyInstaller's hooks copy the entire PySide6 QML tree; we only need
 # QtQuick/Controls + Material, QtQml, QtQuick/Layouts, QtQuick/Templates,
 # QtQuick/Window.  Everything else is dead weight that slows startup.
-_dist = os.path.join("dist", "PourInput", "_internal", "PySide6")
+_dist = os.path.join("dist", "MousePro", "_internal", "PySide6")
 
 # QML dirs to KEEP (everything else under qml/ is deleted)
 _keep_qml = {
@@ -391,17 +391,17 @@ def _cleanup():
         shutil.rmtree(trans, ignore_errors=True)
         print("  [cleanup] removed translations/")
 
-print("[PourInput] Post-build cleanup...")
+print("[MousePro] Post-build cleanup...")
 _cleanup()
-print("[PourInput] Cleanup done.")
+print("[MousePro] Cleanup done.")
 
 # ── macOS App Bundle ───────────────────────────────────────────────────
 if sys.platform == 'darwin':
     app = BUNDLE(
         coll,
-        name='PourInput.app',
+        name='MousePro.app',
         icon='images/AppIcon.icns',
-        bundle_identifier='com.PourInput.app',
+        bundle_identifier='io.github.szboboxing.mousepro',
         info_plist={
             'CFBundleShortVersionString': APP_VERSION,
             'CFBundleVersion': APP_VERSION,

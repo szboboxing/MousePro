@@ -86,6 +86,22 @@ def _action_label(action_id):
     return ACTIONS.get(action_id, {}).get("label", "Do Nothing")
 
 
+def _variant_list(value):
+    """Coerce a QVariant/QJSValue array argument to a plain Python list.
+
+    QML calls ``@Slot("QVariant")`` with a JavaScript array, and PySide6
+    hands it over wrapped as a QJSValue (not iterable from Python)."""
+    to_variant = getattr(value, "toVariant", None)
+    if callable(to_variant):
+        try:
+            value = to_variant()
+        except Exception:
+            return []
+    if isinstance(value, (list, tuple)):
+        return list(value)
+    return []
+
+
 def _qt_shortcut_modifier_name(name):
     """Return the raw Qt semantic name for a modifier."""
     return (name or "").strip().lower()
@@ -196,7 +212,7 @@ def _open_url(url: str) -> bool:
 
 
 def _update_install_enabled() -> bool:
-    value = os.environ.get("POURINPUT_ENABLE_UPDATE_INSTALL", "")
+    value = os.environ.get("MOUSEPRO_ENABLE_UPDATE_INSTALL", "")
     return value.strip().lower() in {"1", "true", "yes", "on"}
 
 
@@ -233,6 +249,14 @@ class Backend(QObject):
     knownAppsChanged = Signal()
     updateAvailable = Signal(str, str)
     updateInstallChanged = Signal()
+
+    # MousePro enhancements
+    rightHoldGestureChanged = Signal()
+    screenshotSideButtonsChanged = Signal()
+    usageStatsChanged = Signal()
+    testEventOccurred = Signal("QVariant")
+    buttonTestActiveChanged = Signal()
+    sideButtonConfirmChanged = Signal()
 
     # Internal cross-thread signals
     _profileSwitchRequest = Signal(str)
@@ -299,6 +323,18 @@ class Backend(QObject):
         self._update_timer = QTimer(self)
         self._update_timer.setInterval(DEFAULT_AUTO_CHECK_INTERVAL_SECONDS * 1000)
         self._update_timer.timeout.connect(lambda: self._startUpdateCheck(manual=False))
+
+        # MousePro enhancements state
+        self._mp_button_test_active = False
+        self._mp_side_button_confirm_active = False
+        self._mp_confirmed_side_buttons = []
+        self._mp_test_counts_lock = threading.Lock()
+        self._mp_test_counts = {
+            "left": 0, "right": 0, "middle": 0,
+            "xbutton1": 0, "xbutton2": 0,
+            "wheel_up": 0, "wheel_down": 0,
+        }
+        self._last_test_event = {}
 
         # Cross-thread signal connections
         self._profileSwitchRequest.connect(
@@ -466,7 +502,7 @@ class Backend(QObject):
                 continue
             data = ACTIONS[aid]
             cat = data["category"]
-            cats.setdefault(cat, []).append({"id": aid, "label": data["label"]})
+            cats.setdefault(cat, []).append({"id": aid, "label": data["label"], "category": cat})
         result = [{"category": c, "actions": a} for c, a in cats.items()]
         result.append({"category": "Custom", "actions": [
             {"id": "__custom__", "label": "Custom Shortcut\u2026"}
@@ -499,6 +535,229 @@ class Backend(QObject):
     def validKeyNames(self):
         """List of valid key names for custom shortcuts."""
         return valid_custom_key_names()
+
+    # ── MousePro enhancements ───────────────────────────────────
+
+    @Property(bool, constant=True)
+    def enhancementsSupported(self):
+        """MousePro quick actions/gestures require Windows."""
+        return sys.platform == "win32"
+
+    @Property(bool, notify=rightHoldGestureChanged)
+    def rightHoldGestureEnabled(self):
+        return bool(
+            self._cfg.get("mousepro", {}).get(
+                "right_hold_gesture_enabled", True
+            )
+        )
+
+    @Slot(bool)
+    def setRightHoldGestureEnabled(self, enabled):
+        enabled = bool(enabled)
+        if self.rightHoldGestureEnabled == enabled:
+            return
+        self._cfg.setdefault("mousepro", {})
+        self._cfg["mousepro"]["right_hold_gesture_enabled"] = enabled
+        if self._engine and hasattr(
+            self._engine, "set_right_hold_gesture_enabled"
+        ):
+            self._engine.set_right_hold_gesture_enabled(enabled)
+        else:
+            save_config(self._cfg)
+        self.rightHoldGestureChanged.emit()
+
+    @Property("QVariant", notify=screenshotSideButtonsChanged)
+    def screenshotSideButtons(self):
+        return list(
+            self._cfg.get("mousepro", {}).get(
+                "screenshot_side_buttons", ["xbutton1", "xbutton2"]
+            )
+        )
+
+    @Slot("QVariant")
+    def setScreenshotSideButtons(self, buttons):
+        cleaned = []
+        for name in _variant_list(buttons):
+            if name in ("xbutton1", "xbutton2") and name not in cleaned:
+                cleaned.append(name)
+        self._cfg.setdefault("mousepro", {})
+        if self._engine and hasattr(
+            self._engine, "set_screenshot_side_buttons"
+        ):
+            saved = self._engine.set_screenshot_side_buttons(cleaned)
+        else:
+            self._cfg["mousepro"]["screenshot_side_buttons"] = cleaned
+            save_config(self._cfg)
+            saved = cleaned
+        self.screenshotSideButtonsChanged.emit()
+
+    @Slot(str, result="QVariant")
+    def runQuickAction(self, actionId):
+        """Execute one MousePro quick action; returns {ok, title, detail}."""
+        data = ACTIONS.get(actionId, {})
+        title = self._tr_action_label(data.get("label", actionId))
+        if not self.enhancementsSupported:
+            detail = self._translate(
+                "mousepro.unsupported",
+                "MousePro enhancements are only available on Windows.",
+            )
+            return {"ok": False, "title": title, "detail": detail}
+        if self._engine and hasattr(self._engine, "run_quick_action"):
+            outcome = self._engine.run_quick_action(actionId)
+        else:
+            outcome = {"ok": False, "detail": "Engine unavailable."}
+        return {
+            "ok": bool(outcome.get("ok")),
+            "title": title,
+            "detail": outcome.get("detail", ""),
+        }
+
+    @Property("QVariant", notify=usageStatsChanged)
+    def usageStats(self):
+        if self._engine and hasattr(self._engine, "get_usage_stats"):
+            return self._engine.get_usage_stats()
+        return {}
+
+    @Slot()
+    def refreshUsageStats(self):
+        self.usageStatsChanged.emit()
+
+    @Slot()
+    def resetUsageStats(self):
+        if self._engine and hasattr(self._engine, "reset_usage_stats"):
+            self._engine.reset_usage_stats()
+        self.usageStatsChanged.emit()
+
+    @Property(bool, notify=buttonTestActiveChanged)
+    def buttonTestActive(self):
+        return self._mp_button_test_active
+
+    @Slot(bool)
+    def setButtonTestActive(self, active):
+        active = bool(active)
+        if active == self._mp_button_test_active:
+            return
+        self._mp_button_test_active = active
+        if self._engine is not None:
+            if active:
+                self.resetTestCounts()
+                if hasattr(self._engine, "add_test_event_listener"):
+                    self._engine.add_test_event_listener(
+                        self._onMpTestEvent
+                    )
+                if hasattr(self._engine, "set_button_test_active"):
+                    self._engine.set_button_test_active(True)
+            else:
+                if hasattr(self._engine, "set_button_test_active"):
+                    self._engine.set_button_test_active(False)
+                if hasattr(self._engine, "remove_test_event_listener"):
+                    self._engine.remove_test_event_listener(
+                        self._onMpTestEvent
+                    )
+        self.buttonTestActiveChanged.emit()
+
+    @Property("QVariant", notify=testEventOccurred)
+    def lastTestEvent(self):
+        return dict(self._last_test_event)
+
+    @Property("QVariant", notify=testEventOccurred)
+    def testCounts(self):
+        with self._mp_test_counts_lock:
+            return dict(self._mp_test_counts)
+
+    @Slot()
+    def resetTestCounts(self):
+        with self._mp_test_counts_lock:
+            for key in self._mp_test_counts:
+                self._mp_test_counts[key] = 0
+        self._last_test_event = {}
+        self.testEventOccurred.emit({})
+
+    @Property(bool, notify=sideButtonConfirmChanged)
+    def sideButtonConfirmActive(self):
+        return self._mp_side_button_confirm_active
+
+    @Slot()
+    def startSideButtonConfirm(self):
+        if self._mp_side_button_confirm_active:
+            return
+        self._mp_side_button_confirm_active = True
+        self._mp_confirmed_side_buttons = list(self.screenshotSideButtons)
+        if self._engine and hasattr(
+            self._engine, "start_side_button_confirm"
+        ):
+            self._engine.start_side_button_confirm(self._onMpTestEvent)
+        self.sideButtonConfirmChanged.emit()
+
+    @Slot("QVariant", result="QVariant")
+    def saveConfirmedSideButtons(self, buttons):
+        normalized = _variant_list(buttons)
+        chosen = normalized if normalized else list(
+            self._mp_confirmed_side_buttons
+        )
+        cleaned = []
+        for name in chosen:
+            if name in ("xbutton1", "xbutton2") and name not in cleaned:
+                cleaned.append(name)
+        if self._engine and hasattr(
+            self._engine, "save_confirmed_side_buttons"
+        ):
+            saved = self._engine.save_confirmed_side_buttons(cleaned)
+        else:
+            self._cfg.setdefault("mousepro", {})
+            self._cfg["mousepro"]["screenshot_side_buttons"] = cleaned
+            save_config(self._cfg)
+            saved = cleaned
+        self._mp_side_button_confirm_active = False
+        self._mp_confirmed_side_buttons = []
+        self.sideButtonConfirmChanged.emit()
+        self.screenshotSideButtonsChanged.emit()
+        return list(saved)
+
+    @Slot()
+    def cancelSideButtonConfirm(self):
+        if not self._mp_side_button_confirm_active:
+            return
+        self._mp_side_button_confirm_active = False
+        self._mp_confirmed_side_buttons = []
+        if self._engine and hasattr(
+            self._engine, "cancel_side_button_confirm"
+        ):
+            self._engine.cancel_side_button_confirm()
+        self.sideButtonConfirmChanged.emit()
+
+    def _tr_action_label(self, english_label):
+        tr = getattr(self._locale_manager, "trAction", None)
+        if tr is not None:
+            return tr(english_label)
+        return english_label
+
+    def _onMpTestEvent(self, payload):
+        """Raw physical-event listener (hook thread) for test/confirm UI."""
+        if not isinstance(payload, dict):
+            return
+        control = payload.get("control")
+        pressed = payload.get("pressed")
+        with self._mp_test_counts_lock:
+            if (
+                control in self._mp_test_counts
+                and control not in {"wheel_up", "wheel_down"}
+                and pressed
+            ):
+                self._mp_test_counts[control] += 1
+            elif control in {"wheel_up", "wheel_down"}:
+                self._mp_test_counts[control] += 1
+        if (
+            self._mp_side_button_confirm_active
+            and control in ("xbutton1", "xbutton2")
+            and pressed
+            and control not in self._mp_confirmed_side_buttons
+        ):
+            self._mp_confirmed_side_buttons.append(control)
+        self._last_test_event = dict(payload)
+        self.testEventOccurred.emit(dict(payload))
+
+    # ────────────────────────────────────────────────────────────
 
     @Property(int, notify=settingsChanged)
     def dpi(self):
@@ -923,7 +1182,7 @@ class Backend(QObject):
         thread = threading.Thread(
             target=self._runUpdateCheck,
             args=(bool(manual), self._update_state),
-            name="PourInputUpdateCheck",
+            name="MouseProUpdateCheck",
             daemon=True,
         )
         thread.start()
@@ -1341,7 +1600,7 @@ class Backend(QObject):
         self._setUpdateInstallState("checking")
         thread = threading.Thread(
             target=self._runPrepareLatestUpdate,
-            name="PourInputPrepareUpdate",
+            name="MouseProPrepareUpdate",
             daemon=True,
         )
         thread.start()

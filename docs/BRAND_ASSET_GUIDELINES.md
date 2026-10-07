@@ -1,6 +1,6 @@
 # Pour Brand Asset Guidelines
 
-> **Scope:** The current PourInput identity is the implemented reference for PourInput. These rules separate production brand assets from functional UI iconography. See [`POUR_DESIGN_SYSTEM.md`](POUR_DESIGN_SYSTEM.md) for family principles.
+> **Scope:** The current MousePro identity is the implemented reference for MousePro. These rules separate production brand assets from functional UI iconography. See [`POUR_DESIGN_SYSTEM.md`](POUR_DESIGN_SYSTEM.md) for family principles.
 
 ## Contents
 
@@ -16,7 +16,7 @@
 | Asset | Current file | Dimensions/type | Authority and use |
 |---|---|---|---|
 | Symbol/app-icon master | [`images/logo_icon.png`](../images/logo_icon.png) | 1024 × 1024 RGBA | Canonical symbol master; mouse silhouette, integrated P, and leaf |
-| Horizontal logo | [`images/logo.png`](../images/logo.png) | 1983 × 793 RGB | Complete uncropped PourInput wordmark for light/white presentation and README |
+| Horizontal logo | [`images/logo.png`](../images/logo.png) | 1983 × 793 RGB | Complete uncropped MousePro wordmark for light/white presentation and README |
 | Monochrome symbol template | [`images/logo_tray_template.png`](../images/logo_tray_template.png) | 1024 × 1024 RGBA | System-tinted macOS menu-bar/tray mark |
 | Windows icon | [`images/logo.ico`](../images/logo.ico) | Multi-image ICO | Generated Windows executable/title/taskbar resource |
 | macOS bundle icon | [`images/AppIcon.icns`](../images/AppIcon.icns) | Multi-resolution ICNS | Current macOS spec authority |
@@ -37,7 +37,7 @@ Preserve the mouse silhouette, integrated P, leaf, scroll-wheel accent, proporti
 - Never crop, stretch, skew, rotate, condense, or expand the logo.
 - Never trim the master symbol's transparent gutter or the horizontal logo's source canvas.
 - Do not mask the logo into an unrelated shape.
-- Keep the complete wordmark visible; `PourInput` must never be truncated to `PourIn` or another partial string.
+- Keep the complete wordmark visible; `MousePro` must never be truncated to `MouseP` or another partial string.
 
 ### Clear space
 
@@ -65,15 +65,15 @@ No additional family-wide clear-space ratio is encoded in the current implementa
 
 ### Windows ICO
 
-[`images/logo.ico`](../images/logo.ico) must contain 16, 24, 32, 48, 64, 128, and 256 px images. [`PourInput.spec`](../PourInput.spec) embeds it in the executable; [`main_qml.py`](../main_qml.py) loads it for the Windows runtime icon. Validate the embedded EXE independently of Explorer's icon cache.
+[`images/logo.ico`](../images/logo.ico) must contain 16, 24, 32, 48, 64, 128, and 256 px images. [`MousePro.spec`](../MousePro.spec) embeds it in the executable; [`main_qml.py`](../main_qml.py) loads it for the Windows runtime icon. Validate the embedded EXE independently of Explorer's icon cache.
 
 ### macOS ICNS and menu bar
 
-[`images/AppIcon.icns`](../images/AppIcon.icns) is consumed by [`PourInput-mac.spec`](../PourInput-mac.spec). The build pipeline produces 16, 32, 128, 256, and 512 px plus Retina variants from the 1024 px master. The Dock uses the full-color symbol; the menu bar uses `logo_tray_template.png` as a system template. Do not use the generic functional mouse SVG as the product tray identity.
+[`images/AppIcon.icns`](../images/AppIcon.icns) is consumed by [`MousePro-mac.spec`](../MousePro-mac.spec). The build pipeline produces 16, 32, 128, 256, and 512 px plus Retina variants from the 1024 px master. The Dock uses the full-color symbol; the menu bar uses `logo_tray_template.png` as a system template. Do not use the generic functional mouse SVG as the product tray identity.
 
 ### Linux
 
-The hicolor ladder uses the application ID `io.github.pour_soi.pourinput` at 16, 24, 32, 48, 64, 128, 256, and 512 px. Keep directory names and file names exact so desktop environments resolve them.
+The hicolor ladder uses the application ID `io.github.szboboxing.mousepro` at 16, 24, 32, 48, 64, 128, 256, and 512 px. Keep directory names and file names exact so desktop environments resolve them.
 
 ### High DPI
 
@@ -103,7 +103,7 @@ Use a production master, not an application screenshot containing the logo. For 
 
 ### Functional mouse icons are not brand marks
 
-[`images/icons/mouse-simple.svg`](../images/icons/mouse-simple.svg), device art, button hotspots, and mouse-control glyphs communicate product function. They are **not** legacy PourInput logos. Keep them wherever the UI needs a mouse/device/action symbol. Replace them with the brand mark only when the surface explicitly represents the application identity, such as the application icon, global rail brand slot, or About header.
+[`images/icons/mouse-simple.svg`](../images/icons/mouse-simple.svg), device art, button hotspots, and mouse-control glyphs communicate product function. They are **not** legacy MousePro logos. Keep them wherever the UI needs a mouse/device/action symbol. Replace them with the brand mark only when the surface explicitly represents the application identity, such as the application icon, global rail brand slot, or About header.
 
 ## Naming and generation
 
@@ -118,7 +118,7 @@ Use a production master, not an application screenshot containing the logo. For 
 - `images/logo.ico` — Windows container
 - `images/AppIcon.icns` — macOS bundle container
 - `images/logo.icns` — retained compatibility container, not the current spec authority
-- `packaging/linux/icons/hicolor/<size>x<size>/apps/io.github.pour_soi.pourinput.png` — Linux ladder
+- `packaging/linux/icons/hicolor/<size>x<size>/apps/io.github.szboboxing.mousepro.png` — Linux ladder
 
 Regenerate platform outputs with `python scripts/build_app_icon.py`. Do not hand-edit derived sizes. Keep review previews and temporary render outputs outside tracked production asset paths unless a separate request explicitly approves them as repository content.
 

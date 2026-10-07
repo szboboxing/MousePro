@@ -10,21 +10,21 @@ import tempfile
 
 # Windows
 RUN_KEY = r"Software\Microsoft\Windows\CurrentVersion\Run"
-RUN_VALUE_NAME = "PourInput"
+RUN_VALUE_NAME = "MousePro"
 
 # macOS
-MACOS_LAUNCH_AGENT_LABEL = "io.github.pour_soi.pourinput"
+MACOS_LAUNCH_AGENT_LABEL = "io.github.szboboxing.mousepro"
 MACOS_PLIST_NAME = f"{MACOS_LAUNCH_AGENT_LABEL}.plist"
 
 # Linux
-LINUX_APP_ID = "io.github.pour_soi.pourinput"
-LINUX_DESKTOP_ENTRY_NAME = "io.github.pour_soi.pourinput.desktop"
+LINUX_APP_ID = "io.github.szboboxing.mousepro"
+LINUX_DESKTOP_ENTRY_NAME = "io.github.szboboxing.mousepro.desktop"
 LINUX_DESKTOP_TEMPLATE_NAME = f"{LINUX_DESKTOP_ENTRY_NAME}.in"
 LINUX_AUTOSTART_DELAY_SECONDS = 15
 LINUX_ICON_NAME = LINUX_APP_ID
 LINUX_ICON_FILENAME = f"{LINUX_ICON_NAME}.png"
 LINUX_ICON_SIZES = (16, 24, 32, 48, 64, 128, 256, 512)
-APP_DISPLAY_NAME = "PourInput"
+APP_DISPLAY_NAME = "MousePro"
 
 
 def _platform_pathmod():
@@ -253,7 +253,7 @@ def _linux_icon_name_or_path() -> str:
 
 
 def sync_linux_icon_theme() -> bool:
-    """Best-effort sync of PourInput's hicolor icons into the user's icon theme."""
+    """Best-effort sync of MousePro's hicolor icons into the user's icon theme."""
     return _sync_linux_icon_theme()
 
 

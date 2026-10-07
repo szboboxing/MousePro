@@ -100,6 +100,225 @@ class Engine:
         except Exception as e:
             print(f"[Engine] Failed to set DPI: {e}")
 
+        # ── MousePro enhancements (right-hold chord / usage stats) ──
+        self._mp_test_listeners = []
+        self._mp_confirm_listeners = []
+        self._mp_test_listeners_lock = threading.Lock()
+        self._mp_button_test_active = False
+        self._mp_confirm_active = False
+        self._setup_mousepro_enhancements()
+
+    # ------------------------------------------------------------------
+    # MousePro enhancements
+    # ------------------------------------------------------------------
+
+    def _setup_mousepro_enhancements(self):
+        """Wire the right-hold gesture chord and raw observer into the hook.
+
+        Callbacks read ``self.cfg`` live, so settings changes only need a
+        config save/reload — the hook itself is never reconfigured.
+        """
+        if not (sys.platform == "win32"
+                and hasattr(self.hook, "set_right_hold_config")):
+            return
+        from core.usage_stats import shared_stats
+
+        self._mp_shared_stats = shared_stats
+        self.hook.set_right_hold_config(
+            enabled_cb=self._mp_gesture_enabled,
+            buttons_cb=self._mp_screenshot_buttons,
+            fire_cb=self._mp_dispatch_gesture,
+            active_test_cb=self._mp_capture_active,
+        )
+        self.hook.set_raw_observer(self._mp_on_raw_event)
+
+    def _mp_gesture_enabled(self):
+        return bool(
+            self.cfg.get("mousepro", {}).get(
+                "right_hold_gesture_enabled", True
+            )
+        )
+
+    def _mp_screenshot_buttons(self):
+        return list(
+            self.cfg.get("mousepro", {}).get(
+                "screenshot_side_buttons", ["xbutton1", "xbutton2"]
+            )
+        )
+
+    def _mp_capture_active(self):
+        return bool(self._mp_button_test_active or self._mp_confirm_active)
+
+    def _mp_on_raw_event(self, payload):
+        # Physical events only: record usage stats and fan out to any
+        # button-test / side-button-confirm UI listeners.
+        try:
+            stats = getattr(self, "_mp_shared_stats", None)
+            if stats is not None:
+                control = payload.get("control")
+                if control in {"left", "right", "middle",
+                               "xbutton1", "xbutton2"}:
+                    if payload.get("pressed"):
+                        stats.record_click(control)
+                elif control in {"wheel_up", "wheel_down"}:
+                    stats.record_wheel(control)
+                elif control == "move":
+                    stats.record_move(payload.get("x", 0), payload.get("y", 0))
+        except Exception:
+            pass
+        with self._mp_test_listeners_lock:
+            listeners = list(self._mp_test_listeners)
+        for listener in listeners:
+            try:
+                listener(payload)
+            except Exception:
+                pass
+
+    def _mp_dispatch_gesture(self, action_id):
+        """Run a committed gesture action off the low-level hook thread."""
+        def _run():
+            try:
+                if action_id == "enhanced_paste":
+                    from core import system_actions
+
+                    result = system_actions.execute_quick_action(
+                        "enhanced_paste"
+                    )
+                    if result.success:
+                        stats = getattr(self, "_mp_shared_stats", None)
+                        if stats is not None:
+                            stats.record_feature("enhanced_paste")
+                    print(
+                        "[Engine] gesture action=enhanced_paste "
+                        f"ok={result.success} detail={result.detail}"
+                    )
+                    return
+                execute_action(action_id)
+                stats = getattr(self, "_mp_shared_stats", None)
+                if stats is not None:
+                    if action_id == "copy":
+                        stats.record_feature("copy")
+                    elif action_id == "system_screenshot":
+                        stats.record_feature("screenshot")
+            except Exception as exc:
+                print(f"[Engine] gesture action failed id={action_id}: {exc}")
+
+        threading.Thread(
+            target=_run, daemon=True, name="MouseProGesture"
+        ).start()
+
+    def set_right_hold_gesture_enabled(self, enabled):
+        self.cfg.setdefault("mousepro", {})
+        self.cfg["mousepro"]["right_hold_gesture_enabled"] = bool(enabled)
+        save_config(self.cfg)
+
+    def set_screenshot_side_buttons(self, buttons):
+        from core.config import sanitize_mousepro_section
+
+        cleaned = []
+        for name in buttons or []:
+            if name in ("xbutton1", "xbutton2") and name not in cleaned:
+                cleaned.append(name)
+        self.cfg.setdefault("mousepro", {})
+        if cleaned:
+            self.cfg["mousepro"]["screenshot_side_buttons"] = cleaned
+        sanitize_mousepro_section(self.cfg)
+        save_config(self.cfg)
+        return list(self.cfg["mousepro"]["screenshot_side_buttons"])
+
+    def get_mousepro_settings(self):
+        section = self.cfg.get("mousepro", {})
+        return {
+            "right_hold_gesture_enabled": bool(
+                section.get("right_hold_gesture_enabled", True)
+            ),
+            "screenshot_side_buttons": list(
+                section.get(
+                    "screenshot_side_buttons", ["xbutton1", "xbutton2"]
+                )
+            ),
+        }
+
+    # -- button test / side-button confirm (raw-event capture) ---------
+
+    def set_button_test_active(self, active):
+        self._mp_button_test_active = bool(active)
+        if hasattr(self.hook, "set_test_mode"):
+            self.hook.set_test_mode(self._mp_capture_active())
+        if not active:
+            with self._mp_test_listeners_lock:
+                self._mp_test_listeners = list(self._mp_confirm_listeners)
+
+    def add_test_event_listener(self, callback):
+        with self._mp_test_listeners_lock:
+            if callback not in self._mp_test_listeners:
+                self._mp_test_listeners.append(callback)
+
+    def remove_test_event_listener(self, callback):
+        with self._mp_test_listeners_lock:
+            self._mp_test_listeners = [
+                cb for cb in self._mp_test_listeners if cb != callback
+            ]
+            self._mp_confirm_listeners = [
+                cb for cb in self._mp_confirm_listeners if cb != callback
+            ]
+
+    def start_side_button_confirm(self, listener):
+        """Capture the next physical side button(s) for the settings UI."""
+        self._mp_confirm_active = True
+        with self._mp_test_listeners_lock:
+            if listener not in self._mp_confirm_listeners:
+                self._mp_confirm_listeners.append(listener)
+            if listener not in self._mp_test_listeners:
+                self._mp_test_listeners.append(listener)
+        if hasattr(self.hook, "set_test_mode"):
+            self.hook.set_test_mode(self._mp_capture_active())
+
+    def cancel_side_button_confirm(self):
+        self._mp_confirm_active = False
+        with self._mp_test_listeners_lock:
+            confirmers = list(self._mp_confirm_listeners)
+            self._mp_confirm_listeners = []
+            self._mp_test_listeners = [
+                cb for cb in self._mp_test_listeners if cb not in confirmers
+            ]
+        if hasattr(self.hook, "set_test_mode"):
+            self.hook.set_test_mode(self._mp_capture_active())
+
+    def save_confirmed_side_buttons(self, buttons):
+        self._mp_confirm_active = False
+        with self._mp_test_listeners_lock:
+            self._mp_confirm_listeners = []
+        if hasattr(self.hook, "set_test_mode"):
+            self.hook.set_test_mode(self._mp_capture_active())
+        return self.set_screenshot_side_buttons(buttons)
+
+    # -- quick actions / usage stats ------------------------------------
+
+    def run_quick_action(self, action_id):
+        """Execute a MousePro quick action; returns ok/detail, never raises."""
+        if sys.platform != "win32":
+            return {"ok": False, "detail": "MousePro actions require Windows."}
+        from core import system_actions
+
+        try:
+            result = system_actions.execute_quick_action(action_id)
+            return {"ok": result.success, "detail": result.detail}
+        except Exception as exc:
+            return {"ok": False, "detail": str(exc)}
+
+    def get_usage_stats(self):
+        stats = getattr(self, "_mp_shared_stats", None)
+        if stats is None:
+            return {}
+        return stats.snapshot()
+
+    def reset_usage_stats(self):
+        stats = getattr(self, "_mp_shared_stats", None)
+        if stats is not None:
+            stats.reset()
+
+
     def _hid_runtime_state(self):
         state = getattr(self.hook, "hid_runtime_state", None)
         if state is not None:

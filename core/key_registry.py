@@ -3,7 +3,7 @@
 The registry keeps custom-shortcut parsing, labels, validation, and platform
 key-code lookup on one canonical key namespace.  It intentionally uses US
 physical-key semantics for punctuation so synthesis is predictable across the
-platform APIs PourInput uses today.
+platform APIs MousePro uses today.
 """
 
 from __future__ import annotations

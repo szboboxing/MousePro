@@ -5,7 +5,7 @@ Many Logitech mice expose their gesture button and DPI/battery controls only
 through the HID++ vendor channel instead of standard OS mouse events. This
 module opens the Logitech HID interface, discovers REPROG_CONTROLS_V4 and
 related features, diverts the best gesture candidate it can find, and reports
-press/release or RawXY movement back to PourInput.
+press/release or RawXY movement back to MousePro.
 
 Requires:  pip install hidapi
 Falls back gracefully if the package or device are unavailable.
