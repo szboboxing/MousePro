@@ -96,13 +96,9 @@ Generic Mouse Mode currently maps the middle button and two side buttons. It can
 
 Other Logitech models may work when they expose the required HID++ controls. If a device is detected but a control is missing, include the device information exported from the mouse page in a [device support request](https://github.com/szboboxing/MousePro/issues).
 
-### macOS edition
+### macOS / Linux
 
-The macOS release is **v1.0.1**. The Windows reading and automatic scrolling features shown above are not included in that release.
-
-[Apple Silicon download](https://github.com/szboboxing/MousePro/releases/download/v1.0.1/MousePro-macOS.zip) · [Intel download](https://github.com/szboboxing/MousePro/releases/download/v1.0.1/MousePro-macOS-intel.zip) · [macOS release notes](https://github.com/szboboxing/MousePro/releases/tag/v1.0.1)
-
-Extract the matching package, open `MousePro.app`, and grant Accessibility permission when prompted. This build is unsigned and unnotarized. Intel hardware testing used a MacBook Air and MX Master 3; Apple Silicon has build validation only. Generic Mouse Mode is Windows-only. Linux remains validation-only.
+There is currently **no prebuilt macOS or Linux package on the [Releases page](https://github.com/szboboxing/MousePro/releases)**. The macOS/Linux targets pass CI build validation only; Windows is the only platform with published downloads. The Windows reading and automatic scrolling features are not part of a macOS build, Generic Mouse Mode is Windows-only, and Linux remains validation-only. If you need a macOS/Linux package, open an [issue](https://github.com/szboboxing/MousePro/issues) so demand can be tracked.
 
 ## Quick help
 

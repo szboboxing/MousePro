@@ -96,13 +96,9 @@ Windows 程序尚未签名。[发布页](https://github.com/szboboxing/MousePro/
 
 其他罗技型号在提供所需 HID++ 控件时可能兼容。如果软件检测到了鼠标，却没有显示某个控件，可以在鼠标页面导出设备信息，并附在[设备支持反馈](https://github.com/szboboxing/MousePro/issues)中。
 
-### macOS 版本
+### macOS / Linux
 
-macOS 版本随 **v1.0.1** 一同发布。上面介绍的 Windows 阅读和自动滚动功能，不包含在这个 macOS 版本中。
-
-[Apple Silicon 下载](https://github.com/szboboxing/MousePro/releases/download/v1.0.1/MousePro-macOS.zip) · [Intel 下载](https://github.com/szboboxing/MousePro/releases/download/v1.0.1/MousePro-macOS-intel.zip) · [macOS 版本说明](https://github.com/szboboxing/MousePro/releases/tag/v1.0.1)
-
-解压对应版本，打开 `MousePro.app`，按提示授予辅助功能权限。此版本尚未签名和公证。Intel 版曾使用 MacBook Air 和 MX Master 3 实测；Apple Silicon 目前仅通过构建验证。通用鼠标模式仅支持 Windows，Linux 仍处于验证阶段。
+[发布页](https://github.com/szboboxing/MousePro/releases)**目前不提供 macOS / Linux 安装包**：这两个平台仅通过 CI 构建验证，当前只有 Windows 提供正式下载。Windows 的阅读和自动滚动功能不包含在 macOS 构建中，通用鼠标模式仅支持 Windows，Linux 同样仅处于验证阶段。如果你需要 macOS/Linux 版本，欢迎到 [Issues](https://github.com/szboboxing/MousePro/issues) 留言，以便统计需求。
 
 ## 常见问题
 
