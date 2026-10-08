@@ -10,11 +10,11 @@
 
 **鼠标Pro 是一款鼠标自定义软件。** 把复制、粘贴、切换标签页、截图、自定义快捷键等常用操作放到鼠标上。为支持的按键分别设置单击和长按动作，再按应用创建配置，让鼠标随着你正在使用的软件切换操作。
 
-[**下载 Windows 正式版 · v1.0.0**](https://github.com/szboboxing/MousePro/releases/download/v1.0.0/MousePro-v1.0.0-Windows.zip) · [更新说明](https://github.com/szboboxing/MousePro/releases/tag/v1.0.0) · [完整功能图集](docs/FEATURES_CN.md)
+[**下载 Windows 正式版 · v1.0.1**](https://github.com/szboboxing/MousePro/releases/download/v1.0.1/MousePro-v1.0.1-Windows.zip) · [更新说明](https://github.com/szboboxing/MousePro/releases/tag/v1.0.1) · [完整功能图集](docs/FEATURES_CN.md)
 
-![鼠标Pro v1.0.0 鼠标按钮与应用配置](images/screenshots-v1.4.3/mouse-zh-CN.png)
+![鼠标Pro v1.0.1 鼠标按钮与应用配置](images/screenshots-v1.4.3/mouse-zh-CN.png)
 
-*截图使用 v1.0.0 实际界面渲染，搭配示例配置与设备能力数据。截图用于说明界面；具体硬件功能取决于鼠标型号和固件。*
+*截图使用 v1.0.1 实际界面渲染，搭配示例配置与设备能力数据。截图用于说明界面；具体硬件功能取决于鼠标型号和固件。*
 
 ## 把常用操作放到鼠标上
 
@@ -76,7 +76,9 @@
 
 ## 在 Windows 上开始使用
 
-[**下载 鼠标Pro v1.0.0 Windows 正式版**](https://github.com/szboboxing/MousePro/releases/download/v1.0.0/MousePro-v1.0.0-Windows.zip)
+[**下载 鼠标Pro v1.0.1 Windows 正式版**](https://github.com/szboboxing/MousePro/releases/download/v1.0.1/MousePro-v1.0.1-Windows.zip)
+
+更喜欢单文件？下载 [鼠标Pro v1.0.1 单文件便携版](https://github.com/szboboxing/MousePro/releases/download/v1.0.1/MousePro-v1.0.1-Windows-OneFile.exe)——单 exe 免安装、无 `_internal` 文件夹，拷到哪都能跑（首次启动要解压，慢几秒属正常），适合内网电脑与 U 盘分发。
 
 1. 将 ZIP **完整解压**到较短的路径，例如 `F:\Apps`。不要直接在压缩包内运行，也不要在解压报错时跳过文件。
 2. 从**系统托盘菜单**退出旧版 鼠标Pro。只关闭设置窗口，并不代表软件已经退出。
@@ -84,7 +86,7 @@
 4. 要设置按键，进入鼠标页面，点击对应按钮。
 5. 按需添加应用配置；要自定义标准中键和侧键时，开启通用鼠标模式。
 
-Windows 程序尚未签名。[发布页](https://github.com/szboboxing/MousePro/releases/tag/v1.0.0)同时提供 SHA-256 校验文件和更新清单。
+Windows 程序尚未签名。[发布页](https://github.com/szboboxing/MousePro/releases/tag/v1.0.1)同时提供 SHA-256 校验文件和更新清单。如果杀毒软件拦截未签名程序，请将 MousePro 加入信任/白名单；系统要求 Windows 10 及以上，且目录版的 `MousePro.exe` 必须与 `_internal` 文件夹一起移动（单文件版无此限制）。
 
 ## 设备与平台说明
 
@@ -96,9 +98,9 @@ Windows 程序尚未签名。[发布页](https://github.com/szboboxing/MousePro/
 
 ### macOS 版本
 
-macOS 版本随 **v1.0.0** 一同发布。上面介绍的 Windows 阅读和自动滚动功能，不包含在这个 macOS 版本中。
+macOS 版本随 **v1.0.1** 一同发布。上面介绍的 Windows 阅读和自动滚动功能，不包含在这个 macOS 版本中。
 
-[Apple Silicon 下载](https://github.com/szboboxing/MousePro/releases/download/v1.0.0/MousePro-macOS.zip) · [Intel 下载](https://github.com/szboboxing/MousePro/releases/download/v1.0.0/MousePro-macOS-intel.zip) · [macOS 版本说明](https://github.com/szboboxing/MousePro/releases/tag/v1.0.0)
+[Apple Silicon 下载](https://github.com/szboboxing/MousePro/releases/download/v1.0.1/MousePro-macOS.zip) · [Intel 下载](https://github.com/szboboxing/MousePro/releases/download/v1.0.1/MousePro-macOS-intel.zip) · [macOS 版本说明](https://github.com/szboboxing/MousePro/releases/tag/v1.0.1)
 
 解压对应版本，打开 `MousePro.app`，按提示授予辅助功能权限。此版本尚未签名和公证。Intel 版曾使用 MacBook Air 和 MX Master 3 实测；Apple Silicon 目前仅通过构建验证。通用鼠标模式仅支持 Windows，Linux 仍处于验证阶段。
 

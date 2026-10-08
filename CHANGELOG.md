@@ -6,6 +6,15 @@ This project uses Semantic Versioning.
 
 ## Unreleased
 
+## v1.0.1 - 2026-10-08
+
+### Added
+- **单文件便携版**（Windows）：新增 `MousePro-v1.0.1-Windows-OneFile.exe`（PyInstaller one-file），单 exe 免安装、无 `_internal` 依赖文件夹，拷贝即用，适配内网电脑与 U 盘分发；首次启动需解压到临时目录，比目录版慢几秒属正常。
+- 新增 `MousePro-onefile.spec`，与目录版 `MousePro.spec` 共用同一套模块裁剪规则。
+
+### Fixed
+- 改善目录版分发误用导致的启动失败：`MousePro.exe` 必须与 `_internal` 文件夹一起拷贝（单文件版无此限制）；README/发布说明补充内网使用提示（未签名程序需在杀毒软件中加白，系统要求 Windows 10+）。
+
 ## 鼠标pro V1.0 - 2026-10-06
 
 ### Added

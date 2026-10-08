@@ -10,11 +10,11 @@
 
 **MousePro is a mouse customization app.** Make supported mouse buttons perform the actions you need: copying, pasting, switching tabs, taking screenshots, running keyboard shortcuts, and more. Give a click and a long press different actions, then create application profiles that switch automatically as you work.
 
-[**Download for Windows · v1.0.0**](https://github.com/szboboxing/MousePro/releases/download/v1.0.0/MousePro-v1.0.0-Windows.zip) · [Release notes](https://github.com/szboboxing/MousePro/releases/tag/v1.0.0) · [Full feature gallery](docs/FEATURES.md)
+[**Download for Windows · v1.0.1**](https://github.com/szboboxing/MousePro/releases/download/v1.0.1/MousePro-v1.0.1-Windows.zip) · [Release notes](https://github.com/szboboxing/MousePro/releases/tag/v1.0.1) · [Full feature gallery](docs/FEATURES.md)
 
-![Mouse controls and application profiles in MousePro v1.0.0](images/screenshots-v1.4.3/mouse-en.png)
+![Mouse controls and application profiles in MousePro v1.0.1](images/screenshots-v1.4.3/mouse-en.png)
 
-*Current v1.0.0 interface, rendered with sample profiles and device capabilities. Screenshots illustrate controls; available hardware features depend on your mouse and firmware.*
+*Current v1.0.1 interface, rendered with sample profiles and device capabilities. Screenshots illustrate controls; available hardware features depend on your mouse and firmware.*
 
 ## Put everyday actions on your mouse
 
@@ -76,7 +76,9 @@ Reading OFF restores ordinary wheel scrolling. Reading ON temporarily claims the
 
 ## Get started on Windows
 
-[**Download MousePro v1.0.0 for Windows**](https://github.com/szboboxing/MousePro/releases/download/v1.0.0/MousePro-v1.0.0-Windows.zip)
+[**Download MousePro v1.0.1 for Windows**](https://github.com/szboboxing/MousePro/releases/download/v1.0.1/MousePro-v1.0.1-Windows.zip)
+
+Prefer a single portable exe? Grab [MousePro-v1.0.1-Windows-OneFile.exe](https://github.com/szboboxing/MousePro/releases/download/v1.0.1/MousePro-v1.0.1-Windows-OneFile.exe) — one standalone file with no `_internal` folder, copy it anywhere and run. The first launch takes a few extra seconds while it unpacks.
 
 1. Extract the **entire ZIP** to a short path, such as `F:\Apps`. Do not run the app inside the ZIP or skip files if extraction fails.
 2. Quit any older MousePro instance from its **system tray menu**. Closing the settings window only hides it.
@@ -84,7 +86,7 @@ Reading OFF restores ordinary wheel scrolling. Reading ON temporarily claims the
 4. To customize buttons, open the mouse page and select a button.
 5. Add application profiles and enable Generic Mouse Mode if you want to customize standard middle and side buttons.
 
-The Windows executable is unsigned. Downloads include a SHA-256 checksum and an update manifest on the [release page](https://github.com/szboboxing/MousePro/releases/tag/v1.0.0).
+The Windows executable is unsigned. Downloads include a SHA-256 checksum and an update manifest on the [release page](https://github.com/szboboxing/MousePro/releases/tag/v1.0.1). If your antivirus flags the unsigned app, whitelist the MousePro folder. Windows 10 or later is required, and the folder build's `MousePro.exe` must stay next to its `_internal` folder (the single-file build has no such constraint).
 
 ## Device and platform notes
 
@@ -96,9 +98,9 @@ Other Logitech models may work when they expose the required HID++ controls. If 
 
 ### macOS edition
 
-The macOS release is **v1.0.0**. The Windows reading and automatic scrolling features shown above are not included in that release.
+The macOS release is **v1.0.1**. The Windows reading and automatic scrolling features shown above are not included in that release.
 
-[Apple Silicon download](https://github.com/szboboxing/MousePro/releases/download/v1.0.0/MousePro-macOS.zip) · [Intel download](https://github.com/szboboxing/MousePro/releases/download/v1.0.0/MousePro-macOS-intel.zip) · [macOS release notes](https://github.com/szboboxing/MousePro/releases/tag/v1.0.0)
+[Apple Silicon download](https://github.com/szboboxing/MousePro/releases/download/v1.0.1/MousePro-macOS.zip) · [Intel download](https://github.com/szboboxing/MousePro/releases/download/v1.0.1/MousePro-macOS-intel.zip) · [macOS release notes](https://github.com/szboboxing/MousePro/releases/tag/v1.0.1)
 
 Extract the matching package, open `MousePro.app`, and grant Accessibility permission when prompted. This build is unsigned and unnotarized. Intel hardware testing used a MacBook Air and MX Master 3; Apple Silicon has build validation only. Generic Mouse Mode is Windows-only. Linux remains validation-only.
 

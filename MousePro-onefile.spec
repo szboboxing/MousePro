@@ -1,0 +1,329 @@
+# -*- mode: python ; coding: utf-8 -*-
+"""
+PyInstaller spec file for MousePro — ONE-FILE build
+Produces a single portable executable in  dist/MousePro.exe
+No _internal folder: copy this one file anywhere and it runs.
+Run:  pyinstaller MousePro-onefile.spec
+
+Mirrors MousePro.spec (onedir) exactly — same Analysis, same trim rules —
+except EXE bundles everything (exclude_binaries=False) and no COLLECT step.
+"""
+
+import os
+import sys
+import json
+import subprocess
+import PySide6
+
+block_cipher = None
+ROOT = os.path.abspath(".")
+PYSIDE6_DIR = os.path.dirname(PySide6.__file__)
+BUILD_INFO_PATH = os.path.join(ROOT, "build", "MOUSEPROONEFILE_build_info.json")
+VERSION_INFO_PATH = os.path.join(ROOT, "build", "MOUSEPROONEFILE_version_info.txt")
+APP_NAME = "MousePro"
+APP_EXECUTABLE_NAME = "MousePro.exe"
+APP_MAINTAINER = "szboboxing"
+
+
+def _load_app_version() -> str:
+    version_path = os.path.join(ROOT, "core", "version.py")
+    namespace = {"__file__": version_path}
+    with open(version_path, encoding="utf-8") as version_file:
+        exec(version_file.read(), namespace)
+    return namespace["APP_VERSION"]
+
+
+def _run_git(args):
+    try:
+        return subprocess.check_output(
+            ["git", *args],
+            cwd=ROOT,
+            stderr=subprocess.DEVNULL,
+            text=True,
+            timeout=0.5,
+        ).strip()
+    except (OSError, subprocess.SubprocessError):
+        return ""
+
+
+def _read_git_head():
+    git_dir = os.path.join(ROOT, ".git")
+    head_path = os.path.join(git_dir, "HEAD")
+    try:
+        with open(head_path, encoding="utf-8") as head_file:
+            head = head_file.read().strip()
+        if head.startswith("ref:"):
+            ref = head.split(":", 1)[1].strip().replace("/", os.sep)
+            ref_path = os.path.join(git_dir, ref)
+            with open(ref_path, encoding="utf-8") as ref_file:
+                return ref_file.read().strip()
+        return head
+    except OSError:
+        return ""
+
+
+def _git_dirty():
+    try:
+        result = subprocess.run(
+            ["git", "status", "--porcelain", "--untracked-files=no"],
+            cwd=ROOT,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            text=True,
+            timeout=0.5,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return False
+    return result.returncode == 0 and bool(result.stdout.strip())
+
+
+def _write_build_info(version: str) -> str:
+    commit = (
+        os.environ.get("MOUSEPRO_GIT_COMMIT", "").strip()
+        or _run_git(["rev-parse", "HEAD"])
+        or _read_git_head()
+    )
+    dirty_env = os.environ.get("MOUSEPRO_GIT_DIRTY")
+    if dirty_env:
+        dirty = dirty_env.strip().lower() in {"1", "true", "yes", "on"}
+    else:
+        dirty = _git_dirty()
+
+    os.makedirs(os.path.dirname(BUILD_INFO_PATH), exist_ok=True)
+    with open(BUILD_INFO_PATH, "w", encoding="utf-8") as build_info_file:
+        json.dump(
+            {
+                "version": version,
+                "commit": commit,
+                "dirty": dirty,
+            },
+            build_info_file,
+        )
+    return BUILD_INFO_PATH
+
+
+def _version_tuple(version: str) -> tuple[int, int, int, int]:
+    parts = []
+    for item in version.split("."):
+        try:
+            parts.append(int(item))
+        except ValueError:
+            parts.append(0)
+    while len(parts) < 4:
+        parts.append(0)
+    return tuple(parts[:4])
+
+
+def _write_version_info(version: str) -> str:
+    file_version = _version_tuple(version)
+    file_version_text = ".".join(str(part) for part in file_version)
+    os.makedirs(os.path.dirname(VERSION_INFO_PATH), exist_ok=True)
+    with open(VERSION_INFO_PATH, "w", encoding="utf-8") as version_info_file:
+        version_info_file.write(
+            f"""# UTF-8
+VSVersionInfo(
+  ffi=FixedFileInfo(
+    filevers={file_version},
+    prodvers={file_version},
+    mask=0x3f,
+    flags=0x0,
+    OS=0x40004,
+    fileType=0x1,
+    subtype=0x0,
+    date=(0, 0)
+  ),
+  kids=[
+    StringFileInfo([
+      StringTable(
+        '040904B0',
+        [
+          StringStruct('CompanyName', '{APP_MAINTAINER}'),
+          StringStruct('FileDescription', '{APP_NAME} (single file)'),
+          StringStruct('FileVersion', '{file_version_text}'),
+          StringStruct('InternalName', 'MousePro'),
+          StringStruct('Maintainer', '{APP_MAINTAINER}'),
+          StringStruct('OriginalFilename', '{APP_EXECUTABLE_NAME}'),
+          StringStruct('ProductName', '{APP_NAME}'),
+          StringStruct('ProductVersion', '{version}'),
+        ]
+      )
+    ]),
+    VarFileInfo([VarStruct('Translation', [1033, 1200])])
+  ]
+)
+"""
+        )
+    return VERSION_INFO_PATH
+
+
+APP_VERSION = _load_app_version()
+BUILD_INFO_DATA = _write_build_info(APP_VERSION)
+VERSION_INFO_DATA = _write_version_info(APP_VERSION)
+
+a = Analysis(
+    ["main_qml.py"],
+    pathex=[ROOT],
+    binaries=[],
+    datas=[
+        # QML UI files
+        (os.path.join(ROOT, "ui", "qml"), os.path.join("ui", "qml")),
+        # Image assets
+        (os.path.join(ROOT, "images"), "images"),
+        (BUILD_INFO_DATA, "."),
+    ],
+    hiddenimports=[
+        # conditional / lazy imports PyInstaller may miss
+        "hid",
+        "logging.handlers",
+        "ctypes.wintypes",
+        "ui.locale_manager",
+        # PySide6 QML runtime
+        "PySide6.QtQuick",
+        "PySide6.QtQuickControls2",
+        "PySide6.QtQml",
+        "PySide6.QtNetwork",
+        "PySide6.QtOpenGL",
+        "PySide6.QtSvg",
+    ],
+    hookspath=[],
+    hooksconfig={},
+    runtime_hooks=[],
+    excludes=[
+        # ── Aggressively trim unneeded PySide6 modules ──
+        "PySide6.QtWebEngine",
+        "PySide6.QtWebEngineCore",
+        "PySide6.QtWebEngineWidgets",
+        "PySide6.QtWebChannel",
+        "PySide6.QtWebSockets",
+        "PySide6.Qt3DCore",
+        "PySide6.Qt3DRender",
+        "PySide6.Qt3DInput",
+        "PySide6.Qt3DLogic",
+        "PySide6.Qt3DAnimation",
+        "PySide6.Qt3DExtras",
+        "PySide6.QtMultimedia",
+        "PySide6.QtMultimediaWidgets",
+        "PySide6.QtBluetooth",
+        "PySide6.QtNfc",
+        "PySide6.QtPositioning",
+        "PySide6.QtLocation",
+        "PySide6.QtSensors",
+        "PySide6.QtSerialPort",
+        "PySide6.QtSerialBus",
+        "PySide6.QtTest",
+        "PySide6.QtPdf",
+        "PySide6.QtPdfWidgets",
+        "PySide6.QtCharts",
+        "PySide6.QtDataVisualization",
+        "PySide6.QtRemoteObjects",
+        "PySide6.QtScxml",
+        "PySide6.QtSql",
+        "PySide6.QtTextToSpeech",
+        "PySide6.QtQuick3D",
+        "PySide6.QtVirtualKeyboard",
+        "PySide6.QtGraphs",
+        "PySide6.Qt5Compat",
+        # ── PySide6 designer / tools (not needed at runtime) ──
+        "PySide6.QtDesigner",
+        "PySide6.QtHelp",
+        "PySide6.QtUiTools",
+        "PySide6.QtXml",
+        "PySide6.QtConcurrent",
+        "PySide6.QtDBus",
+        "PySide6.QtStateMachine",
+        "PySide6.QtHttpServer",
+        "PySide6.QtSpatialAudio",
+        # ── Other unused stdlib modules ──
+        "unittest",
+        "xmlrpc",
+        "pydoc",
+        "doctest",
+        "tkinter",
+        "test",
+        "distutils",
+        "setuptools",
+        "ensurepip",
+        "lib2to3",
+        "idlelib",
+        "turtledemo",
+        "turtle",
+        "sqlite3",
+        "multiprocessing",
+    ],
+    noarchive=False,
+)
+
+pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
+
+# ── Filter out massive Qt DLLs and data we don't need ──────────────────
+# Identical to MousePro.spec — keep only modules the QML app uses.
+_qt_keep = {
+    # Core Qt
+    "Qt6Core", "Qt6Gui", "Qt6Widgets", "Qt6Network", "Qt6OpenGL",
+    # QML / Quick
+    "Qt6Qml", "Qt6QmlCore", "Qt6QmlMeta", "Qt6QmlModels",
+    "Qt6QmlNetwork", "Qt6QmlWorkerScript",
+    "Qt6Quick", "Qt6QuickControls2", "Qt6QuickControls2Impl",
+    "Qt6QuickControls2Basic", "Qt6QuickControls2BasicStyleImpl",
+    "Qt6QuickControls2Material", "Qt6QuickControls2MaterialStyleImpl",
+    "Qt6QuickTemplates2", "Qt6QuickLayouts", "Qt6QuickEffects",
+    "Qt6QuickShapes",
+    # Rendering
+    "Qt6ShaderTools", "Qt6Svg",
+    # PySide6 runtime
+    "pyside6.abi3", "pyside6qml.abi3", "shiboken6.abi3",
+    # VC runtime
+    "MSVCP140", "MSVCP140_1", "MSVCP140_2",
+    "VCRUNTIME140", "VCRUNTIME140_1",
+}
+
+def _should_keep(name):
+    """Return True if this binary/data entry should be kept."""
+    # Always keep non-PySide6 files
+    if "PySide6" not in name and "pyside6" not in name.lower():
+        return True
+    # Check the filename (last component)
+    base = os.path.basename(name)
+    stem = os.path.splitext(base)[0]
+    # Keep if it's in our whitelist
+    if stem in _qt_keep:
+        return True
+    # Keep all .pyd files (Python extensions — small and needed)
+    if base.endswith(".pyd"):
+        return True
+    # Keep plugin dirs we need (platforms, imageformats, styles, iconengines)
+    for keep in ("platforms", "imageformats", "styles", "iconengines",
+                 "platforminputcontexts"):
+        if keep in name:
+            return True
+    # Keep QML dirs we need
+    for keep_qml in ("QtCore", "QtQml", "QtQuick", "QtNetwork"):
+        pat = os.path.join("qml", keep_qml)
+        if pat in name.replace("/", os.sep):
+            return True
+    # Drop everything else (WebEngine, 3D, Charts, Multimedia, etc.)
+    return False
+
+a.binaries = [b for b in a.binaries if _should_keep(b[0])]
+a.datas    = [d for d in a.datas    if _should_keep(d[0])]
+
+# ── ONE-FILE: everything embedded in the exe, no COLLECT ───────────────
+exe = EXE(
+    pyz,
+    a.scripts,
+    a.binaries,
+    a.zipfiles,
+    a.datas,
+    [],
+    exclude_binaries=False,   # ← one-file mode
+    name="MousePro",
+    debug=False,
+    bootloader_ignore_signals=False,
+    strip=False,
+    upx=False,                # UPX OFF — decompression at startup is very slow
+    console=False,            # windowed app (no terminal)
+    icon=os.path.join(ROOT, "images", "logo.ico"),
+    version=VERSION_INFO_DATA,
+    uac_admin=False,          # does NOT require admin
+)

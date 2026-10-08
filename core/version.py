@@ -14,7 +14,7 @@ APP_NAME_ZH = "鼠标Pro"
 APP_EXECUTABLE_NAME = "MousePro.exe"
 MAINTAINER = "szboboxing"
 
-_DEFAULT_APP_VERSION = "1.0.0"
+_DEFAULT_APP_VERSION = "1.0.1"
 _BUILD_INFO_FILENAME = "MOUSEPRO_build_info.json"
 _REPO_ROOT = Path(__file__).resolve().parent.parent
 
