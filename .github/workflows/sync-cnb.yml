@@ -1,0 +1,30 @@
+name: Sync to CNB
+
+# GitHub -> CNB(cnb.cool/szjack) 代码镜像：推送 main 与全部 tag。
+# 唯一构建源仍是 GitHub；此工作流只搬运 refs，不构建。
+on:
+  push:
+    branches: [main]
+    tags: ['v*', 'V*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sync-code:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Fetch all tags
+        run: git fetch origin --tags --force
+      - name: 'Push main and tags to CNB mirror'
+        env:
+          CNB_TOKEN: ${{ secrets.CNB_TOKEN }}
+        run: |
+          git remote add cnb "https://cnb:${CNB_TOKEN}@cnb.cool/szjack/MousePro.git"
+          git push cnb main --force
+          git push cnb --tags --force
